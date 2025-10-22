@@ -1,7 +1,7 @@
 CLOSE="Закрыть"
 HOME="Домой"
 BROWSE=
-DONE=
+DONE="Сделано"
 CANCEL="Отменить"
 CONTINUE="Продолжить"
 ERROR_DOWNLOAD="Во время загрузки файла произошла ошибка."
