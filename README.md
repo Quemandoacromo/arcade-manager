@@ -23,15 +23,17 @@ The latest version is available here: <https://github.com/cosmo0/arcade-manager/
 
 ## Features
 
-* Multi-platform, works on Windows, MacOS and Linux
-* Multi-language (check "translating" if you want to help)
-* User-friendly, easy to use interface
+* User-friendly, easy to use interface with included extensive help
 * Wizard with various pre-built lists of "best games"
 * Manage rom files: copy or cleanup a selection of roms
 * Checks and fixes a romset, and converts it to non-merged (other types are not supported)
 * Download and install an overlays pack (Retropie or Recalbox)
 * Manage games lists to use with the roms file management: merge and split files, convert DAT or INI files, and more
-* Includes extensive help
+
+And also:
+
+* Multi-platform, works on Windows, MacOS and Linux
+* Multi-language (check "translating" if you want to help)
 
 Copying files assumes you have a working romset corresponding to the MAME/FBNeo version you're using. ArcadeManager can convert a romset to non-merged (all clones can work on their own) but not to other types; for that, use a tool like [ClrMamePro](https://mamedev.emulab.it/clrmamepro/).
 
