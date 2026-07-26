@@ -8,7 +8,7 @@ namespace ArcadeManager.Console.Commands;
 
 public class RomsAddCommand(IRoms roms, IMessageHandler messageHandler) : AsyncCommand<RomsSettings>
 {
-    public override async Task<int> ExecuteAsync(CommandContext context, RomsSettings settings)
+    protected override async Task<int> ExecuteAsync(CommandContext context, RomsSettings settings, CancellationToken cancellationToken)
     {
         await roms.Add(settings.ToAction(), messageHandler);
         return 0;

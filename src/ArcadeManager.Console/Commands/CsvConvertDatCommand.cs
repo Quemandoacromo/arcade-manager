@@ -7,7 +7,7 @@ namespace ArcadeManager.Console.Commands;
 
 public class CsvConvertDatCommand(ICsv csv, IMessageHandler messageHandler) : AsyncCommand<CsvSettings>
 {
-    public override async Task<int> ExecuteAsync(CommandContext context, CsvSettings settings)
+    protected override async Task<int> ExecuteAsync(CommandContext context, CsvSettings settings, CancellationToken cancellationToken)
     {
         await csv.ConvertDat(settings.Main, settings.Target, messageHandler);
         return 0;
