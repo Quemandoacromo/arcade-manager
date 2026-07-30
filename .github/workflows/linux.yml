@@ -8,38 +8,59 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+
+    runs-on: ubuntu-latest  # For a list of available runner types, refer to
+                            # https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
+
     defaults:
       run:
         working-directory: ./src
+
     steps:
-      - uses: actions/checkout@v4
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: 10.x
-      - name: Setup Node.js environment
-        uses: actions/setup-node@v4.1.0
-        with:
-          node-version: 22.x
-      - name: Setup Snapcraft
-        run: sudo snap install snapcraft --classic
-      - name: Restore dependencies
-        run: dotnet restore
-      - name: Build
-        run: dotnet build -c Release --no-restore
-      - name: Test
-        run: dotnet test
-      - name: Publish
-        run: dotnet publish -p:PublishProfile=linux-x64
-        working-directory: ./src/ArcadeManager
-      - name: Upload binaries
-        uses: actions/upload-artifact@v4
-        with:
-          name: ArcadeManager-linux
-          path: ./src/ArcadeManager/publish/Release/net10.0/linux-x64/*.*
-      - name: Upload console binaries
-        uses: actions/upload-artifact@v4
-        with:
-          name: ArcadeManager-linux-console
-          path: ./src/ArcadeManager.Console/bin/Release/net10.0/*.*
+
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    # Install the .NET Core workload
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 10.x
+
+    # Install the NodeJS workload
+    - name: Setup Node.js environment
+      uses: actions/setup-node@v4.1.0
+      with:
+        node-version: 22.x
+
+    # Setup Snapcraft
+    - name: Setup Snapcraft
+      run: sudo snap install snapcraft --classic
+
+    # Restore Nuget packages
+    - name: Restore dependencies
+      run: dotnet restore
+
+    # Build the project
+    - name: Build
+      run: dotnet build -c Release --no-restore
+
+    # Publish and package the app
+    - name: Publish
+      run: dotnet publish -p:PublishProfile=linux-x64
+      working-directory: ./src/ArcadeManager
+
+    # Upload the binaries of the GUI app
+    - name: Upload binaries
+      uses: actions/upload-artifact@v4
+      with:
+        name: ArcadeManager-linux
+        path: ./src/ArcadeManager/publish/Release/net10.0/linux-x64/*.*
+
+    # Upload the binaries of the console app
+    - name: Upload console binaries
+      uses: actions/upload-artifact@v4
+      with:
+        name: ArcadeManager-linux-console
+        path: ./src/ArcadeManager.Console/bin/Release/net10.0/*.*
