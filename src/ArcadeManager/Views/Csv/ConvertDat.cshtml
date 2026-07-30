@@ -16,7 +16,7 @@
 
 <div class="input-group mb-0">
     <div class="input-group-prepend">
-        <span class="input-group-text">@Localizer["CSV_CONVERTDAT_MAINFILE"]</span>
+        <label class="input-group-text" for="fileMain">@Localizer["CSV_CONVERTDAT_MAINFILE"]</label>
     </div>
     <input type="text" class="form-control" id="fileMain">
     <div class="input-group-append">
@@ -29,7 +29,7 @@
 
 <div class="input-group mb-0">
     <div class="input-group-prepend">
-        <span class="input-group-text">@Localizer["CSV_CONVERTDAT_TARGET"]</span>
+        <label class="input-group-text" for="fileTarget">@Localizer["CSV_CONVERTDAT_TARGET"]</label>
     </div>
     <input type="text" class="form-control" id="fileTarget">
     <div class="input-group-append">
@@ -45,7 +45,7 @@
 </p>
 
 @section Scripts {
-	<script>
+<script>
 	$('#buttonOk').on('click', () => {
 		// get paths from file inputs
 		const main = $('#fileMain').val(),
@@ -62,5 +62,5 @@
 		// execute action
 		ipc('csv-convertdat', { main, target });
     });
-    </script>
+</script>
 }

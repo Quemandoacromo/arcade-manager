@@ -29,7 +29,9 @@ public class ZipEntry(ZipArchiveEntry entry)
     public string GetSha1()
     {
         // see https://stackoverflow.com/questions/1993903
+#pragma warning disable S4790 // I do not control the MAME expected hashes format
         var sha1 = SHA1.Create();
+#pragma warning restore S4790
         byte[] hash = sha1.ComputeHash(entry.Open());
         StringBuilder formatted = new(2 * hash.Length);
         foreach (byte b in hash)

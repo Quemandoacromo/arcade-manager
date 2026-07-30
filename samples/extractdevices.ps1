@@ -33,12 +33,12 @@ $skipped = "konami_cpu","z80","nvram","watchdog","screen","palette","speaker","g
     "address_map_bank","neogeo_ctrl_edge","neogeo_joyac","neogeo_control_port","neogeo_cart_slot","ng_cmc_prot",`
     "discrete","galaxian_sound","generic_fifo_u32_device","neosprite_opt","neocart_rom"
 
-$mame.mame.machine | % {
+$mame.mame.machine | ForEach-Object {
     $line = ""
 
-    $_.device_ref | ? {
+    $_.device_ref | Where-Object {
         $skipped -notcontains $_.name
-    } | Select-Object -Property name -Unique | % {
+    } | Select-Object -Property name -Unique | ForEach-Object {
         if (Test-Path "$roms\$($_.name).zip") {
             $line += ";"+$_.name
         }

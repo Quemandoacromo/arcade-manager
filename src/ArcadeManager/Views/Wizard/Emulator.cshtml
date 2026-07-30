@@ -19,7 +19,7 @@
 
     <input type="hidden" asp-for="DoOverlays" />
 
-    <div class="border rounded d-flex p-3 mb-3 option-container">
+    <label class="border rounded d-flex p-3 mb-3 option-container">
         <input type="radio" class="mr-3 mt-4 flex-grow-0 flex-shrink-0" asp-for="Emulator" checked="checked" value="fbneo">
         <div class="flex-fill">
             <h5 class="mb-1 name">@Localizer["WIZARD_EMULATOR_FBNEO_NAME"]</h5>
@@ -27,9 +27,9 @@
                 @Html.Raw(Localizer["WIZARD_EMULATOR_FBNEO_DESC"])
             </p>
         </div>
-    </div>
+    </label>
 
-    <div class="border rounded d-flex p-3 mb-3 option-container">
+    <label class="border rounded d-flex p-3 mb-3 option-container">
         <input type="radio" class="mr-3 mt-4 flex-grow-0 flex-shrink-0" asp-for="Emulator" value="mame">
         <div class="flex-fill">
             <h5 class="mb-1 name">@Localizer["WIZARD_EMULATOR_MAME_NAME"]</h5>
@@ -37,9 +37,9 @@
                 @Html.Raw(Localizer["WIZARD_EMULATOR_MAME_DESC"])
             </p>
         </div>
-    </div>
+    </label>
     
-    <div class="border rounded d-flex p-3 mb-3 option-container">
+    <label class="border rounded d-flex p-3 mb-3 option-container">
         <input type="radio" class="mr-3 mt-4 flex-grow-0 flex-shrink-0" asp-for="Emulator" value="mame2003">
         <div class="flex-fill">
             <h5 class="mb-1 name">@Localizer["WIZARD_EMULATOR_MAME2003_NAME"]</h5>
@@ -47,7 +47,7 @@
                 @Html.Raw(Localizer["WIZARD_EMULATOR_MAME2003_DESC"])
             </p>
         </div>
-    </div>
+    </label>
 
     <div class="row">
         <div class="col-6">
@@ -61,14 +61,3 @@
     </div>
 
 </form>
-
-@section Scripts {
-    <script type="text/javascript">
-        // toggle radio on click anywhere in the box
-        $('.option-container').on('click', (e) => {
-            const container = $(e.currentTarget),
-                check = container.find('input:radio');
-            check.prop('checked', true);
-        });
-    </script>
-}

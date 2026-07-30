@@ -28,7 +28,7 @@
         <div id="packs">
             <div class="pack" data-pack="Realistic">
                 <a href="#" class="border rounded d-block p-3 mb-3 text-dark">
-                    <input type="radio" class="float-left mr-3 mt-4">
+                    <input type="radio" class="float-left mr-3 mt-4" aria-label="@Localizer["OVERLAYS_PACK_REALISTIC_NAME"]">
                     <img src="/img/overlays-realistic.jpg" class="float-left mr-3" alt="@Localizer["OVERLAYS_PACK_REALISTIC_NAME"]">
                     <h5 class="mb-1 name">@Localizer["OVERLAYS_PACK_REALISTIC_NAME"]</h5>
                     <p class="mb-0 desc">@Localizer["OVERLAYS_PACK_REALISTIC_DESC"]</p>
@@ -37,7 +37,7 @@
 
             <div class="pack" data-pack="Artworks">
                 <a href="#" class="border rounded d-block p-3 mb-3 text-dark">
-                    <input type="radio" class="float-left mr-3 mt-4">
+                    <input type="radio" class="float-left mr-3 mt-4" aria-label="@Localizer["OVERLAYS_PACK_ARTWORK_NAME"]">
                     <img src="/img/overlays-artwork.jpg" class="float-left mr-3" alt="@Localizer["OVERLAYS_PACK_ARTWORK_NAME"]">
                     <h5 class="mb-1 name">@Localizer["OVERLAYS_PACK_ARTWORK_NAME"]</h5>
                     <p class="mb-0 desc">@Localizer["OVERLAYS_PACK_ARTWORK_DESC"]</p>
@@ -51,7 +51,7 @@
         <div id="romFoldersContainer">
             <div class="input-group mb-0">
                 <div class="input-group-prepend">
-                    <span class="input-group-text">@Localizer["OVERLAYS_SETTINGS_ROMSFOLDER"]</span>
+                    <label class="input-group-text" for="romFolder">@Localizer["OVERLAYS_SETTINGS_ROMSFOLDER"]</label>
                 </div>
                 <input type="text" class="form-control" id="romFolder" placeholder="@Localizer["OVERLAYS_SETTINGS_ROMSFOLDER_PLACEHOLDER"]">
                 <div class="input-group-append">
@@ -64,7 +64,7 @@
             <hr>
             <div class="input-group mb-0">
                 <div class="input-group-prepend">
-                    <span class="input-group-text">@Localizer["OVERLAYS_SETTINGS_CONFIGFOLDER"]</span>
+                    <label class="input-group-text" for="configFolder">@Localizer["OVERLAYS_SETTINGS_CONFIGFOLDER"]</label>
                 </div>
                 <input type="text" class="form-control" id="configFolder" placeholder="@Localizer["OVERLAYS_SETTINGS_CONFIGFOLDER_PLACEHOLDER"]">
                 <div class="input-group-append">
@@ -77,11 +77,11 @@
             <!-- resize -->
             <div class="col-6">
                 <div class="input-group">
-                    <input type="text" class="form-control" placeholder="@Localizer["OVERLAYS_WIDTH"]" id="width" value="1920">
+                    <input type="text" class="form-control" placeholder="@Localizer["OVERLAYS_WIDTH"]" id="width" value="1920" aria-label="@Localizer["OVERLAYS_WIDTH"]">
                     <div class="input-group-append input-group-prepend">
                         <span class="input-group-text">&times;</span>
                     </div>
-                    <input type="text" class="form-control" placeholder="@Localizer["OVERLAYS_HEIGHT"]" id="height" value="1080">
+                    <input type="text" class="form-control" placeholder="@Localizer["OVERLAYS_HEIGHT"]" id="height" value="1080" aria-label="@Localizer["OVERLAYS_HEIGHT"]">
                 </div>
                 <small>
                     <a href="#" class="setsize" data-width="2560" data-height="1440">1440p</a>

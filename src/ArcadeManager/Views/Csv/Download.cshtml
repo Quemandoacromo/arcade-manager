@@ -53,55 +53,55 @@
 </script>
 
 @section Scripts {
-    <script>
-        $(() => {
-            $('#csvs a').on('click', (e) => {
-                e.preventDefault();
+<script>
+    $(() => {
+        $('#csvs a').on('click', (e) => {
+            e.preventDefault();
 
-                // get data
-                const a = $(e.currentTarget),
-                    folder = a.attr('data-folder');
+            // get data
+            const a = $(e.currentTarget),
+                folder = a.attr('data-folder');
 
-                // toggle active
-                $('#csvs').find('a').removeClass('active');
-                a.addClass('active');
+            // toggle active
+            $('#csvs').find('a').removeClass('active');
+            a.addClass('active');
 
-                // load content
-                listFiles(folder);
-            });
+            // load content
+            listFiles(folder);
         });
+    });
 
-        function listFiles(folder) {
-            const name = folder; // for the string interpolation in the translation message
-            $('#files').empty().html(`@Localizer["CSV_DOWNLOAD_LOADING"]`);
-            const template = $('#fileItemTemplate').html();
+    function listFiles(folder) {
+        const name = folder; // for the string interpolation in the translation message
+        $('#files').empty().html(`@Localizer["CSV_DOWNLOAD_LOADING"]`);
+        const template = $('#fileItemTemplate').html();
 
-            getLocalList(folder, (data) => {
-                $('#files').empty();
+        getLocalList(folder, (data) => {
+            $('#files').empty();
 
-                for (let filedetail of data) {
-                    const fileItem = $(template);
-                    fileItem.find('.file').text(filedetail.filename);
-                    fileItem.find('.desc').html(filedetail.description);
-                    if (filedetail.types.indexOf('main') >= 0) {
-                        fileItem.addClass('text-primary border-primary');
-                    }
+            for (let filedetail of data) {
+                const fileItem = $(template);
+                fileItem.find('.file').text(filedetail.filename);
+                fileItem.find('.desc').html(filedetail.description);
+                if (filedetail.types.indexOf('main') >= 0) {
+                    fileItem.addClass('text-primary border-primary');
+                }
 
-                    // handle click
-                    fileItem.on('click', (e) => {
-                        newFile(filedetail.filename, (filename) => {
-                            if (!filename) { return; }
+                // handle click
+                fileItem.on('click', (e) => {
+                    newFile(filedetail.filename, (filename) => {
+                        if (!filename) { return; }
 
-                            copyFile(filedetail.filepath, filename, true, (success) => {
-                                // TODO: ask the user? not sure
-                                //ipc('open-folder', filename);
-                            });
+                        copyFile(filedetail.filepath, filename, true, (success) => {
+                            // TODO: ask the user? not sure
+                            //ipc('open-folder', filename);
                         });
                     });
+                });
 
-                    $('#files').append(fileItem);
-                }
-            });
-        }
-    </script>
+                $('#files').append(fileItem);
+            }
+        });
+    }
+</script>
 }

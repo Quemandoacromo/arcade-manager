@@ -148,7 +148,9 @@ public static class StartupElectron
                     new()
                     {
                         Label = "Learn More",
+#pragma warning disable S1075
                         Click = async () => await Electron.Shell.OpenExternalAsync("https://github.com/cosmo0/arcade-manager/")
+#pragma warning restore S1075
                     }
                 ]
             }

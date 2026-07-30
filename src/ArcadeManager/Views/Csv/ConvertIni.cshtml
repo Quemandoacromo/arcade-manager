@@ -16,7 +16,7 @@
 
 <div class="input-group mb-0">
     <div class="input-group-prepend">
-        <span class="input-group-text">@Localizer["CSV_CONVERTINI_MAINFILE"]</span>
+        <label class="input-group-text" for="fileMain">@Localizer["CSV_CONVERTINI_MAINFILE"]</label>
     </div>
     <input type="text" class="form-control" id="fileMain">
     <div class="input-group-append">
@@ -29,7 +29,7 @@
 
 <div class="input-group mb-0">
     <div class="input-group-prepend">
-        <span class="input-group-text">@Localizer["CSV_CONVERTINI_TARGET"]</span>
+        <label class="input-group-text" for="fileTarget">@Localizer["CSV_CONVERTINI_TARGET"]</label>
     </div>
     <input type="text" class="form-control" id="fileTarget">
     <div class="input-group-append">
@@ -45,19 +45,19 @@
 </p>
 
 @section Scripts {
-    <script>
-        $('#buttonOk').on('click', () => {
-            // get paths from file inputs
-            const main = $('#fileMain').val(),
-                target = $('#fileTarget').val();
+<script>
+    $('#buttonOk').on('click', () => {
+        // get paths from file inputs
+        const main = $('#fileMain').val(),
+            target = $('#fileTarget').val();
 
-            // check every path is filled
-            if (main === '') { window.alert('@Html.Raw(Localizer.Js("CSV_CONVERTINI_ERRORNOINI"))'); return; }
-            if (target === '') { window.alert('@Html.Raw(Localizer.Js("CSV_CONVERTINI_ERRORNOTARGET"))'); return; }
-            if (!main.toLowerCase().endsWith('.ini')) { window.alert('@Html.Raw(Localizer.Js("CSV_CONVERTINI_ERRORBADINI"))'); }
+        // check every path is filled
+        if (main === '') { window.alert('@Html.Raw(Localizer.Js("CSV_CONVERTINI_ERRORNOINI"))'); return; }
+        if (target === '') { window.alert('@Html.Raw(Localizer.Js("CSV_CONVERTINI_ERRORNOTARGET"))'); return; }
+        if (!main.toLowerCase().endsWith('.ini')) { window.alert('@Html.Raw(Localizer.Js("CSV_CONVERTINI_ERRORBADINI"))'); }
 
-            // execute action
-            ipc('csv-convertini', { main, target });
-        });
-    </script>
+        // execute action
+        ipc('csv-convertini', { main, target });
+    });
+</script>
 }

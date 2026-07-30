@@ -44,7 +44,7 @@ jobs:
 
     # Publish and package the app
     - name: Publish
-      run: dotnet publish -p:PublishProfile=osx-arm64
+      run: dotnet publish -p:PublishProfile=osx-arm64 -c Release -r osx-arm64
       working-directory: ./src/ArcadeManager
 
     # Upload the binaries of the GUI app
