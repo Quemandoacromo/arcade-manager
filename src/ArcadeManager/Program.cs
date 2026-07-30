@@ -5,6 +5,7 @@ using ElectronNET.API;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace ArcadeManager;
@@ -14,7 +15,7 @@ namespace ArcadeManager;
 /// </summary>
 public static class Program
 {
-    private static readonly object messageHandlerLock = new();
+    private static readonly Lock messageHandlerLock = new();
     private static IElectronMessageHandler messageHandler;
 
     /// <summary>

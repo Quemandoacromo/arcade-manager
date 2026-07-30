@@ -35,6 +35,8 @@ public static class StartupElectron
     /// </summary>
     public static async Task ElectronBootstrap(BrowserWindow mainWindow)
     {
+        BuildAppMenu();
+
         // re-create main window if last window has been closed
         await Electron.App.On("activate", async obj =>
         {
@@ -52,7 +54,6 @@ public static class StartupElectron
             // initializes RPC message handling
             Program.GetMessageHandler(null)?.Handle(mainWindow);
 
-            BuildAppMenu();
         });
     }
 

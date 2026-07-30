@@ -53,9 +53,4 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-  <ProjectExtensions>
-    <VisualStudio>
-      <UserProperties electron_1manifest_1json__JsonSchema="electro" />
-    </VisualStudio>
-  </ProjectExtensions>
 </Project>

@@ -17,15 +17,11 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: |
-            6.x
-            8.x
+          dotnet-version: 10.x
       - name: Setup Node.js environment
         uses: actions/setup-node@v4.1.0
         with:
           node-version: 22.x
-      - name: Setup ElectronNET
-        run: dotnet tool install --global ElectronNET.CLI
       - name: Setup coverage
         run: dotnet tool install --global dotnet-coverage
       - name: Restore dependencies
@@ -34,16 +30,16 @@ jobs:
         run: dotnet build -c Release --no-restore
       - name: Test
         run: dotnet-coverage collect "dotnet test" -f xml -o "coverage.xml"
-      - name: Electronize
-        run: electronize build /target win
+      - name: Publish
+        run: dotnet publish -p:PublishProfile=win-x64
         working-directory: ./src/ArcadeManager
       - name: Upload binaries
         uses: actions/upload-artifact@v4
         with:
           name: ArcadeManager-win
-          path: ./src/ArcadeManager/bin/Desktop/*.*
+          path: ./src/ArcadeManager/publish/Release/net10.0/win-x64/*.*
       - name: Upload console binaries
         uses: actions/upload-artifact@v4
         with:
           name: ArcadeManager-win-console
-          path: ./src/ArcadeManager.Console/bin/Release/net8.0/*.*
+          path: ./src/ArcadeManager.Console/bin/Release/net10.0/*.*
