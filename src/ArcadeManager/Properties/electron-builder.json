@@ -1,0 +1,44 @@
+{
+  "$schema": "https://raw.githubusercontent.com/electron-userland/electron-builder/refs/heads/master/packages/app-builder-lib/scheme.json",
+  "appId": "com.ArcadeManager.app",
+  "productName": "ArcadeManager",
+  "copyright": "",
+  "buildVersion": "26.1.0",
+  "compression": "maximum",
+  "win": {
+    "target": [
+      {
+        "target": "nsis",
+        "arch": [ "x64" ]
+      },
+      {
+        "target": "zip",
+        "arch": [ "x64" ]
+      }
+    ],
+    "icon": "bin/Assets/electron.ico"
+  },
+  "linux": {
+    "target": [
+      {
+        "target": "AppImage",
+        "arch": [ "x64" ]
+      },
+      {
+        "target": "snap",
+        "arch": [ "x64" ]
+      }
+    ],
+    "icon": "bin/Assets/electron_256x256.png"
+  },
+  "mac": {
+    "target": [
+      {
+        "target": "dmg",
+        "arch": [ "arm64" ]
+      }
+    ],
+    "icon": "bin/Assets/icon.icns",
+    "category": "public.app-category.games"
+  }
+}

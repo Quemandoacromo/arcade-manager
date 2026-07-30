@@ -66,7 +66,7 @@ function ipc(method, data, cb) {
     if (cb && typeof cb === 'function') {
         ipcRenderer.once(method + "-reply", (_, result) => {
             console.log('Get results back from ' + method + '-reply');
-            if (result && result instanceof Array && result.length > 0) {
+            if (result && Array.isArray(result) && result.length > 0) {
                 result = result[0];
             }
 

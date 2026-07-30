@@ -68,20 +68,12 @@ You can also contribute using [Weblate](https://hosted.weblate.org/projects/arca
 
 ### Prerequisites
 
-* Dotnet 6 SDK - <https://dotnet.microsoft.com/en-us/download/dotnet/6.0>
-* Dotnet 8 SDK - <https://dotnet.microsoft.com/en-us/download/dotnet/8.0>
-* NodeJS 22.x or later - <https://nodejs.org/download>
-* Open a command line and run `dotnet tool install --global ElectronNET.CLI`
+* Dotnet 10 SDK - <https://dotnet.microsoft.com/en-us/download/dotnet/10.0>
+* NodeJS 22 or later - <https://nodejs.org/download>
 
 ### Build and run
 
-````bash
-cd src/ArcadeManager
-dotnet build
-electronize start
-````
-
-To debug, attach Visual Studio to the `ArcadeManager` process.
+Use Visual Studio or VSCode and use the debug profile "Electron (unpackaged)".
 
 Run `.\samples\generate-samples.ps1` in Powershell to generate a fake romset in `tmp\roms` (empty zip files with the right names).
 
@@ -90,12 +82,15 @@ Run `.\samples\generate-samples.ps1` in Powershell to generate a fake romset in 
 Choose your OS and architecture:
 
 ````bash
-electronize build /target win
-electronize build /target osx /electron-arch arm64
-electronize build /target linux
+cd ArcadeManager
+dotnet publish -p:PublishProfile=win-x64 -c Release -r win-x64
+dotnet publish -p:PublishProfile=linux-x64 -c Release -r linux-x64
+dotnet publish -p:PublishProfile=osx-arm64 -c Release -r osx-arm64
 ````
 
-Windows ARM and Linux ARM are not currently supported.  
-MacOS x86 is not supported anymore.
+Note that the Windows publication must be run as administrator.
 
-If you want to build for another architecture, edit the file `src\ArcadeManager\electron.manifest.json`, scroll down to "build", locate your platform (win, osx, linux), and in "target", change the "arch" property to your architecture (x64 or arm64). Don't forget to build using the matching `/electron-arch` parameter.
+Windows ARM, Linux ARM and MacOS x86 are not currently supported; you can build your own version, but I don't have a way to generate binaries for them.
+
+If you want to build for another architecture, check out `src\ArcadeManager\Properties\PublishProfiles`, and create a new profile.  
+Check the [build documentation](https://github.com/ElectronNET/Electron.NET/wiki/Package-Building)

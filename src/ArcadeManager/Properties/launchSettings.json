@@ -1,31 +1,26 @@
 {
-  "iisSettings": {
-    "windowsAuthentication": false,
-    "anonymousAuthentication": true,
-    "iisExpress": {
-      "applicationUrl": "http://localhost:21250",
-      "sslPort": 44355
-    }
-  },
   "profiles": {
-    "IIS Express": {
-      "commandName": "IISExpress",
-      "launchBrowser": true,
+    "WSL": {
+      "commandName": "WSL2",
+      "launchUrl": "http://localhost:8001/",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ASPNETCORE_URLS": "http://localhost:8001/"
+      },
+      "distributionName": ""
+    },
+    "ASP.Net (unpackaged)": {
+      "commandName": "Project",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
-      }
+      },
+      "applicationUrl": "http://localhost:8001/"
     },
-    "Electron.NET App": {
+    "Electron (unpackaged)": {
       "commandName": "Executable",
-      "executablePath": "electronize",
-      "commandLineArgs": "start",
-      "workingDirectory": ".",
-      "environmentVariables": {}
-    },
-    "ArcadeManager": {
-      "commandName": "Project",
-      "launchBrowser": false,
-      "applicationUrl": "http://localhost:21250/",
+      "executablePath": "node",
+      "commandLineArgs": "node_modules/electron/cli.js main.js -unpackedelectron",
+      "workingDirectory": "$(TargetDir).electron",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }

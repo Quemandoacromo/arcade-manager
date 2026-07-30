@@ -433,9 +433,10 @@ public class Csv(IFileSystem fs) : ICsv {
     private static async Task ReadIniFile(StreamReader source, Dictionary<string, List<IniEntry>> data, long fileSize, IMessageHandler messageHandler) {
         var isFolderSetting = false;
         var currentSection = "";
+        string line;
 
-        while (!source.EndOfStream) {
-            var line = (await source.ReadLineAsync()).Trim();
+        while ((line = await source.ReadLineAsync()) is not null) {
+            line = line.Trim();
 
             // progress up to 50%
             messageHandler.Progress("Reading source file", 100, (int)(source.BaseStream.Position / fileSize * 50));
