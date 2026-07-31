@@ -1,7 +1,9 @@
+using System;
+using System.IO;
 using ArcadeManager.Core.Infrastructure;
 using ArcadeManager.Core.Models;
 
-namespace ArcadeManager.Core;
+namespace ArcadeManager;
 
 /// <summary>
 /// Settings manager

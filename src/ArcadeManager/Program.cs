@@ -1,4 +1,5 @@
 using ArcadeManager.Core;
+using ArcadeManager.Core.Exceptions;
 using ArcadeManager.Core.Infrastructure.Interfaces;
 using ArcadeManager.Core.Services;
 using ElectronNET.API;
@@ -38,7 +39,7 @@ public static class Program
 
         if (container == null && messageHandler == null)
         {
-            throw new Exception("No DI container provided and message handler not initialized");
+            throw new StartupException("No DI container provided and message handler not initialized");
         }
 
         return messageHandler;
