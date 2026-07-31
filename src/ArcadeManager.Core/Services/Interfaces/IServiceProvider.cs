@@ -36,14 +36,4 @@ public interface IServiceProvider
     /// Gets the roms service
     /// </summary>
     IRoms Roms { get; }
-
-    /// <summary>
-    /// Gets the updater service
-    /// </summary>
-    IUpdater Updater { get; }
-
-    /// <summary>
-    /// Gets the wizard service
-    /// </summary>
-    IWizard Wizard { get; }
 }

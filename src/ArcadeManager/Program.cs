@@ -2,6 +2,7 @@ using ArcadeManager.Core;
 using ArcadeManager.Core.Exceptions;
 using ArcadeManager.Core.Infrastructure.Interfaces;
 using ArcadeManager.Core.Services;
+using ArcadeManager.Services.Interfaces;
 using ElectronNET.API;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
@@ -32,6 +33,7 @@ public static class Program
             {
                 messageHandler ??= new ElectronMessageHandler(
                         container.GetInstance<Core.Services.Interfaces.IServiceProvider>(),
+                        container.GetInstance<IUpdater>(),
                         container.GetInstance<IEnvironment>(),
                         container.GetInstance<IFileSystem>());
             }

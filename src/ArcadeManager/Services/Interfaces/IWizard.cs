@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace ArcadeManager.Core.Services.Interfaces;
+namespace ArcadeManager.Services.Interfaces;
 
 /// <summary>
 /// Interface for the wizard service

@@ -1,5 +1,6 @@
 ﻿using ArcadeManager.Core.Services.Interfaces;
 using ArcadeManager.Models;
+using ArcadeManager.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -12,6 +13,7 @@ namespace ArcadeManager.Controllers;
 /// Initializes a new instance of the <see cref="WizardController"/> class.
 /// </remarks>
 /// <param name="logger">The logger.</param>
+/// <param name="wizardService">The wizard service</param>
 public class WizardController(ILogger<WizardController> logger, IWizard wizardService) : BaseController(logger) {
 
     /// <summary>

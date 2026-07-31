@@ -3,6 +3,7 @@ using ArcadeManager.Core.Actions;
 using ArcadeManager.Core.Infrastructure;
 using ArcadeManager.Core.Infrastructure.Interfaces;
 using ArcadeManager.Core.Models.Roms;
+using ArcadeManager.Services.Interfaces;
 using ElectronNET.API;
 using ElectronNET.API.Entities;
 using System;
@@ -18,15 +19,13 @@ namespace ArcadeManager;
 /// <remarks>
 /// Initializes a new instance of the <see cref="MessageHandler"/> class.
 /// </remarks>
-/// <param name="csvService">The CSV service.</param>
-/// <param name="downloaderService">The downloader service.</param>
-/// <param name="overlaysService">The overlays service.</param>
-/// <param name="romsService">The roms service.</param>
-/// <param name="updaterService">The updater service.</param>
-/// <param name="fs">The file system service</param>
+/// <param name="services">The services provider.</param>
+/// <param name="updater">The updater service.</param>
 /// <param name="environment">The environment accessor</param>
+/// <param name="fs">The file system service</param>
 public partial class ElectronMessageHandler(
     Core.Services.Interfaces.IServiceProvider services,
+    IUpdater updater,
     IEnvironment environment,
     IFileSystem fs) : IElectronMessageHandler {
     private const string ProgressChannel = "progress";
@@ -508,12 +507,10 @@ public partial class ElectronMessageHandler(
     /// Checks if an update is available
     /// </summary>
     private async Task UpdateCheck() {
-        var current = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
+        var current = await ArcadeManagerEnvironment.GetVersion();
 
-        var update = await services.Updater.CheckUpdate(current);
-        if (update != null) {
-            update.Current = current;
-        }
+        var update = await updater.CheckUpdate(current);
+        update?.Current = current;
 
         Electron.IpcMain.Send(window, "update-check-reply");
     }

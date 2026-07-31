@@ -3,12 +3,13 @@ using ArcadeManager.Core.Infrastructure;
 using ArcadeManager.Core.Infrastructure.Interfaces;
 using ArcadeManager.Core.Models.Github;
 using ArcadeManager.Core.Services.Interfaces;
+using ArcadeManager.Services.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ArcadeManager.Core.Services;
+namespace ArcadeManager.Services;
 
 /// <summary>
 /// Application update

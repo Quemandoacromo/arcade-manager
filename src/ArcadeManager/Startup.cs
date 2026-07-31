@@ -3,6 +3,8 @@ using ArcadeManager.Core.Infrastructure;
 using ArcadeManager.Core.Infrastructure.Interfaces;
 using ArcadeManager.Core.Services;
 using ArcadeManager.Core.Services.Interfaces;
+using ArcadeManager.Services;
+using ArcadeManager.Services.Interfaces;
 using ElectronNET.API;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -122,16 +124,18 @@ public class Startup(IConfiguration configuration)
             container.Register<IFileSystem, FileSystem>(Lifestyle.Singleton);
             container.Register<IDatFile, DatFile>(Lifestyle.Singleton);
 
-            // services
+            // core services
             container.Register<IDownloader, Downloader>(Lifestyle.Singleton);
             container.Register<ICsv, Csv>(Lifestyle.Singleton);
             container.Register<IOverlays, Overlays>(Lifestyle.Singleton);
             container.Register<IRoms, Roms>(Lifestyle.Singleton);
-            container.Register<IUpdater, Updater>(Lifestyle.Singleton);
             container.Register<ILocalizer, Localizer>(Lifestyle.Singleton);
-            container.Register<IWizard, Wizard>(Lifestyle.Singleton);
             container.Register<IDatChecker, DatChecker>(Lifestyle.Singleton);
             container.Register<Core.Services.Interfaces.IServiceProvider, Core.Services.ServiceProvider>(Lifestyle.Singleton);
+
+            // app services
+            container.Register<IWizard, Wizard>(Lifestyle.Singleton);
+            container.Register<IUpdater, Updater>(Lifestyle.Singleton);
 
             // message handler (SimpleInjector returns the same singleton if it's the same implementation)
             container.Register<IMessageHandler>(() => { return Program.GetMessageHandler(container); });

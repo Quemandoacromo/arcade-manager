@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using ArcadeManager.Core.Models.Github;
 
-namespace ArcadeManager.Core.Services.Interfaces;
+namespace ArcadeManager.Services.Interfaces;
 
 /// <summary>
 /// Interface for the app updater
