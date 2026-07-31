@@ -31,9 +31,7 @@ public sealed class TypeRegistrar : ITypeRegistrar
         builder.AddSingleton<ICsv, Csv>();
         builder.AddSingleton<IOverlays, Overlays>();
         builder.AddSingleton<IRoms, Roms>();
-        builder.AddSingleton<IUpdater, Updater>();
         builder.AddSingleton<ILocalizer, Localizer>();
-        builder.AddSingleton<IWizard, Wizard>();
         builder.AddSingleton<IDatChecker, DatChecker>();
         builder.AddSingleton<Core.Services.Interfaces.IServiceProvider, Core.Services.ServiceProvider>();
 
