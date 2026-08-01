@@ -73,12 +73,17 @@
 </div>
 
 <div class="row mt-4">
-    <div class="col-8 help">
+    <div class="col-4 help">
         <div class="list-group">
             <a asp-controller="Help" asp-action="Index" class="navmenu list-group-item list-group-item-action text-primary border-primary">
                 <i class="icustom-help"></i> @Localizer["HOME_ACTION_HELP"]
             </a>
         </div>
+    </div>
+    <div class="col-4">
+        <a href="@SettingsManager.AppSettings.App.HomePage" class="list-group-item list-group-item-action text-primary border-primary blank">
+            @Localizer["HOME_HOMEPAGE"] - v@(await ArcadeManagerEnvironment.GetVersion())
+        </a>
     </div>
     <div class="col-4 system">
         <div class="list-group">

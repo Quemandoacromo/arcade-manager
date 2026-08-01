@@ -55,8 +55,9 @@ public static class Program
     {
         Localizer.EnsureLocale();
 
-        await Host
-            .CreateDefaultBuilder(args)
+        var builder = Host.CreateDefaultBuilder(args);
+
+        await builder
             .ConfigureWebHostDefaults(webBuilder =>
             {
                 webBuilder.UseElectron(args, async () =>

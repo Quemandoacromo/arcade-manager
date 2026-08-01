@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using ArcadeManager.Core.Infrastructure;
 using ArcadeManager.Core.Models;
+using ArcadeManager.Models;
 
 namespace ArcadeManager;
 
@@ -14,7 +15,25 @@ namespace ArcadeManager;
 /// <param name="fileName">Name of the file.</param>
 public class SettingsManager(string fileName)
 {
+    private static AppSettingsModel appSettingsModel;
     private readonly string _filePath = GetLocalFilePath(fileName);
+
+    /// <summary>
+    /// Gets the application settings and parameters.
+    /// </summary>
+    public static AppSettingsModel AppSettings
+    {
+        get
+        {
+            if (appSettingsModel == null)
+            {
+                var file = Path.Combine(ArcadeManagerEnvironment.BasePath, "appsettings.json");
+                appSettingsModel = Serializer.Deserialize<AppSettingsModel>(File.ReadAllText(file));
+            }
+
+            return appSettingsModel;
+        }
+    }
 
     /// <summary>
     /// Loads the settings.
