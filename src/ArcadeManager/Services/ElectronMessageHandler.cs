@@ -7,11 +7,9 @@ using ArcadeManager.Services.Interfaces;
 using ElectronNET.API;
 using ElectronNET.API.Entities;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
-namespace ArcadeManager;
+namespace ArcadeManager.Services;
 
 /// <summary>
 /// Class for messages handling
@@ -27,9 +25,20 @@ public partial class ElectronMessageHandler(
     Core.Services.Interfaces.IServiceProvider services,
     IUpdater updater,
     IEnvironment environment,
-    IFileSystem fs) : IElectronMessageHandler {
+    IFileSystem fs) : IElectronMessageHandler
+{
     private const string ProgressChannel = "progress";
     private BrowserWindow window;
+
+    /// <summary>
+    /// Gets or sets the current item index
+    /// </summary>
+    public int CurrentItem { get; set; }
+
+    /// <summary>
+    /// Gets or sets the current step index
+    /// </summary>
+    public int CurrentStep { get; set; }
 
     /// <summary>
     /// Gets or sets the cancellation token
@@ -47,55 +56,19 @@ public partial class ElectronMessageHandler(
     public int TotalSteps { get; set; }
 
     /// <summary>
-    /// Gets or sets the current item index
-    /// </summary>
-    public int CurrentItem { get; set; }
-
-    /// <summary>
-    /// Gets or sets the current step index
-    /// </summary>
-    public int CurrentStep { get; set; }
-
-    /// <summary>
-    /// Sends an "init" progress message
-    /// </summary>
-    /// <param name="label">The label.</param>
-    public void Init(string label) {
-        MustCancel = false;
-        Electron.IpcMain.Send(window, ProgressChannel, new Progress { Label = label, Init = true });
-    }
-
-    /// <summary>
-    /// Sends a progression message
-    /// </summary>
-    /// <param name="label">The label to display</param>
-    public void Progress(string label) {
-        Electron.IpcMain.Send(window, ProgressChannel, new Progress { Label = label, Total = this.TotalItems, Current = this.CurrentItem });
-    }
-
-    /// <summary>
-    /// Sends a progression message
-    /// </summary>
-    /// <param name="label">The label.</param>
-    /// <param name="total">The total number of items.</param>
-    /// <param name="current">The current item number.</param>
-    public void Progress(string label, int total, int current) {
-        this.TotalItems = total;
-        this.CurrentItem = current;
-        Electron.IpcMain.Send(window, ProgressChannel, new Progress { Label = label, Total = total, Current = current });
-    }
-
-    /// <summary>
     /// Sends a "done" progress message
     /// </summary>
     /// <param name="label">The label.</param>
     /// <param name="folder">The result folder, if any.</param>
-    public void Done(string label, string folder) {
+    public void Done(string label, string folder)
+    {
         // display result
-        if (MustCancel) {
+        if (MustCancel)
+        {
             Electron.IpcMain.Send(window, ProgressChannel, new Progress { Label = $"Operation cancelled! - {label}", End = true, Cancelled = true });
         }
-        else {
+        else
+        {
             Electron.IpcMain.Send(window, ProgressChannel, new Progress { Label = label, End = true, Folder = folder });
         }
 
@@ -106,29 +79,23 @@ public partial class ElectronMessageHandler(
     /// Sends an "error" progress message
     /// </summary>
     /// <param name="ex">The exception.</param>
-    public void Error(Exception ex) {
+    public void Error(Exception ex)
+    {
         Electron.IpcMain.Send(window, ProgressChannel, new Progress { Label = $"An error has occurred: {ex.Message}", End = true });
-        
-        MustCancel = false;
-    }
 
-    /// <summary>
-    /// Sets the list of successfully processed games
-    /// </summary>
-    /// <param name="game">The processed game</param>
-    public void Processed(GameRom game) {
-        if (game == null) { return; }
-        Electron.IpcMain.Send(window, "progress-processed", Serializer.Serialize(game));
+        MustCancel = false;
     }
 
     /// <summary>
     /// Initializes the message handling for the specified window
     /// </summary>
     /// <param name="window">The window.</param>
-    public async Task Handle(BrowserWindow window) {
+    public async Task Handle(BrowserWindow window)
+    {
         this.window = window;
 
-        if (HybridSupport.IsElectronActive) {
+        if (HybridSupport.IsElectronActive)
+        {
             // Cancel actions
             await Electron.IpcMain.On("cancel", (args) => { MustCancel = true; });
 
@@ -183,18 +150,76 @@ public partial class ElectronMessageHandler(
     }
 
     /// <summary>
+    /// Sends an "init" progress message
+    /// </summary>
+    /// <param name="label">The label.</param>
+    public void Init(string label)
+    {
+        MustCancel = false;
+        Electron.IpcMain.Send(window, ProgressChannel, new Progress { Label = label, Init = true });
+    }
+
+    /// <summary>
+    /// Sets the list of successfully processed games
+    /// </summary>
+    /// <param name="game">The processed game</param>
+    public void Processed(GameRom game)
+    {
+        if (game == null) { return; }
+        Electron.IpcMain.Send(window, "progress-processed", Serializer.Serialize(game));
+    }
+
+    /// <summary>
+    /// Sends a progression message
+    /// </summary>
+    /// <param name="label">The label to display</param>
+    public void Progress(string label)
+    {
+        Electron.IpcMain.Send(window, ProgressChannel, new Progress { Label = label, Total = this.TotalItems, Current = this.CurrentItem });
+    }
+
+    /// <summary>
+    /// Sends a progression message
+    /// </summary>
+    /// <param name="label">The label.</param>
+    /// <param name="total">The total number of items.</param>
+    /// <param name="current">The current item number.</param>
+    public void Progress(string label, int total, int current)
+    {
+        this.TotalItems = total;
+        this.CurrentItem = current;
+        Electron.IpcMain.Send(window, ProgressChannel, new Progress { Label = label, Total = total, Current = current });
+    }
+
+    /// <summary>
+    /// Changes the selected OS
+    /// </summary>
+    /// <param name="obj">The value</param>
+    private static void ChangeOs(object obj)
+    {
+        if (obj != null)
+        {
+            // save the OS in settings
+            ArcadeManagerEnvironment.SettingsOs = obj.ToString();
+        }
+    }
+
+    /// <summary>
     /// Convert arguments to strongly-typed object
     /// </summary>
     /// <typeparam name="T">The type of the object</typeparam>
     /// <param name="args">The arguments</param>
     /// <returns>The object</returns>
     /// <exception cref="ArgumentException">Unable to convert arguments to JObject</exception>
-    private static T ConvertArgs<T>(object args) {
-        if (args == null) {
+    private static T ConvertArgs<T>(object args)
+    {
+        if (args == null)
+        {
             return default;
         }
 
-        if (args.GetType() != typeof(Newtonsoft.Json.Linq.JObject)) {
+        if (args.GetType() != typeof(Newtonsoft.Json.Linq.JObject))
+        {
             throw new ArgumentException("Unable to convert arguments to JObject");
         }
 
@@ -202,12 +227,31 @@ public partial class ElectronMessageHandler(
     }
 
     /// <summary>
+    /// Opens a new browser window to the specified URL
+    /// </summary>
+    /// <param name="url">The URL to open</param>
+    private static async Task OpenNewWindow(object url)
+    {
+        if (url != null)
+        {
+            Console.WriteLine("open blank link to: " + url.ToString());
+            await Electron.Shell.OpenExternalAsync(url.ToString());
+        }
+        else
+        {
+            Console.WriteLine("Unable to open a blank link: no URL provided");
+        }
+    }
+
+    /// <summary>
     /// Browse for a folder to select
     /// </summary>
     /// <param name="currentPath">The default path</param>
-    private async Task BrowseFolder(object currentPath) {
-        var options = new OpenDialogOptions {
-            Properties = [ OpenDialogProperty.openDirectory ],
+    private async Task BrowseFolder(object currentPath)
+    {
+        var options = new OpenDialogOptions
+        {
+            Properties = [OpenDialogProperty.openDirectory],
             DefaultPath = currentPath as string ?? Environment.GetFolderPath(Environment.SpecialFolder.Personal)
         };
 
@@ -216,21 +260,24 @@ public partial class ElectronMessageHandler(
     }
 
     /// <summary>
-    /// Changes the selected OS
+    /// Copies a local file
     /// </summary>
-    /// <param name="obj">The value</param>
-    private static void ChangeOs(object obj) {
-        if (obj != null) {
-            // save the OS in settings
-            ArcadeManagerEnvironment.SettingsOs = obj.ToString();
-        }
+    /// <param name="args">The arguments</param>
+    private void CopyFile(object args)
+    {
+        var data = ConvertArgs<FileAction>(args);
+
+        fs.FileCopy(data.Source, data.Target, data.Overwrite);
+
+        Electron.IpcMain.Send(window, "copy-file-reply", true);
     }
 
     /// <summary>
     /// Converts a DAT file.
     /// </summary>
     /// <param name="args">The arguments.</param>
-    private async Task CsvConvertDat(object args) {
+    private async Task CsvConvertDat(object args)
+    {
         var data = ConvertArgs<CsvAction>(args);
         MustCancel = false;
 
@@ -241,7 +288,8 @@ public partial class ElectronMessageHandler(
     /// Converts a INI file
     /// </summary>
     /// <param name="args">The arguments</param>
-    private async Task CsvConvertIni(object args) {
+    private async Task CsvConvertIni(object args)
+    {
         var data = ConvertArgs<CsvAction>(args);
         MustCancel = false;
 
@@ -252,7 +300,8 @@ public partial class ElectronMessageHandler(
     /// Keeps only listed entries in a CSV file
     /// </summary>
     /// <param name="args">The arguments.</param>
-    private async Task CsvKeep(object args) {
+    private async Task CsvKeep(object args)
+    {
         var data = ConvertArgs<CsvAction>(args);
         MustCancel = false;
 
@@ -263,7 +312,8 @@ public partial class ElectronMessageHandler(
     /// Lists the files in a folder to CSV
     /// </summary>
     /// <param name="args">The arguments.</param>
-    private async Task CsvListFiles(object args) {
+    private async Task CsvListFiles(object args)
+    {
         var data = ConvertArgs<CsvAction>(args);
         MustCancel = false;
 
@@ -274,7 +324,8 @@ public partial class ElectronMessageHandler(
     /// Merges two CSV files
     /// </summary>
     /// <param name="args">The arguments.</param>
-    private async Task CsvMerge(object args) {
+    private async Task CsvMerge(object args)
+    {
         var data = ConvertArgs<CsvAction>(args);
         MustCancel = false;
 
@@ -285,7 +336,8 @@ public partial class ElectronMessageHandler(
     /// Removes entries from a CSV file
     /// </summary>
     /// <param name="args">The arguments.</param>
-    private async Task CsvRemove(object args) {
+    private async Task CsvRemove(object args)
+    {
         var data = ConvertArgs<CsvAction>(args);
         MustCancel = false;
 
@@ -296,7 +348,8 @@ public partial class ElectronMessageHandler(
     /// Downloads the specified file.
     /// </summary>
     /// <param name="args">The arguments.</param>
-    private async Task DownloadFile(object args) {
+    private async Task DownloadFile(object args)
+    {
         var data = ConvertArgs<DownloadAction>(args);
         MustCancel = false;
 
@@ -308,7 +361,8 @@ public partial class ElectronMessageHandler(
     /// <summary>
     /// Checks if a path exists
     /// </summary>
-    private void FsExists(object args) {
+    private void FsExists(object args)
+    {
         var path = args as string;
 
         Electron.IpcMain.Send(window, "fs-exists-reply", fs.Exists(path));
@@ -317,7 +371,8 @@ public partial class ElectronMessageHandler(
     /// <summary>
     /// Gets the application data settings
     /// </summary>
-    private void GetAppData() {
+    private void GetAppData()
+    {
         // serialize here to handle a transmission problem
         Electron.IpcMain.Send(window, "get-appdata-reply", Serializer.Serialize(ArcadeManagerEnvironment.AppData));
     }
@@ -325,7 +380,8 @@ public partial class ElectronMessageHandler(
     /// <summary>
     /// Gets the selected OS
     /// </summary>
-    private void GetOs() {
+    private void GetOs()
+    {
         // serialize here to handle a transmission problem
         Electron.IpcMain.Send(window, "get-os-reply", Serializer.Serialize(ArcadeManagerEnvironment.SettingsOs));
     }
@@ -334,7 +390,8 @@ public partial class ElectronMessageHandler(
     /// Gets a files list from Github.
     /// </summary>
     /// <param name="args">The arguments.</param>
-    private async Task GithubFilesGetList(object args) {
+    private async Task GithubFilesGetList(object args)
+    {
         var data = ConvertArgs<DownloadAction>(args);
         MustCancel = false;
 
@@ -345,7 +402,8 @@ public partial class ElectronMessageHandler(
     /// Gets a files list from a local folder.
     /// </summary>
     /// <param name="args">The arguments.</param>
-    private void LocalFilesGetList(object args) {
+    private void LocalFilesGetList(object args)
+    {
         var data = ConvertArgs<DownloadAction>(args);
         MustCancel = false;
 
@@ -356,8 +414,10 @@ public partial class ElectronMessageHandler(
     /// Create a new file
     /// </summary>
     /// <param name="path">The default path</param>
-    private async Task NewFile(object path) {
-        var options = new SaveDialogOptions {
+    private async Task NewFile(object path)
+    {
+        var options = new SaveDialogOptions
+        {
             DefaultPath = path as string ?? Environment.GetFolderPath(Environment.SpecialFolder.Personal)
         };
 
@@ -366,46 +426,24 @@ public partial class ElectronMessageHandler(
     }
 
     /// <summary>
-    /// Copies a local file
-    /// </summary>
-    /// <param name="args">The arguments</param>
-    private void CopyFile(object args) {
-        var data = ConvertArgs<FileAction>(args);
-        
-        fs.FileCopy(data.Source, data.Target, data.Overwrite);
-
-        Electron.IpcMain.Send(window, "copy-file-reply", true);
-    }
-
-    /// <summary>
     /// Opens the explorer to the specified folder
     /// </summary>
     /// <param name="folder">The folder to open</param>
-    private async Task OpenFolder(object folder) {
-        if (folder != null && fs.Exists(folder.ToString())) {
+    private async Task OpenFolder(object folder)
+    {
+        if (folder != null && fs.Exists(folder.ToString()))
+        {
             var path = folder.ToString();
-            if (!fs.IsDirectory(path)) {
+            if (!fs.IsDirectory(path))
+            {
                 path = fs.DirectoryName(path);
             }
 
             await Electron.Shell.OpenPathAsync(path);
         }
-        else {
+        else
+        {
             Console.WriteLine("Unable to open the folder");
-        }
-    }
-
-    /// <summary>
-    /// Opens a new browser window to the specified URL
-    /// </summary>
-    /// <param name="url">The URL to open</param>
-    private static async Task OpenNewWindow(object url) {
-        if (url != null) {
-            Console.WriteLine("open blank link to: " + url.ToString());
-            await Electron.Shell.OpenExternalAsync(url.ToString());
-        }
-        else {
-            Console.WriteLine("Unable to open a blank link: no URL provided");
         }
     }
 
@@ -413,7 +451,8 @@ public partial class ElectronMessageHandler(
     /// Downloads overlays
     /// </summary>
     /// <param name="args">The arguments</param>
-    private async Task OverlaysDownload(object args) {
+    private async Task OverlaysDownload(object args)
+    {
         var data = ConvertArgs<OverlaysAction>(args);
         MustCancel = false;
 
@@ -421,23 +460,11 @@ public partial class ElectronMessageHandler(
     }
 
     /// <summary>
-    /// Checks the existence of roms
-    /// </summary>
-    /// <param name="args">The arguments</param>
-    private async Task RomsCheck(object args) {
-        var data = ConvertArgs<RomsAction>(args);
-        MustCancel = false;
-
-        string[] missing = await services.Roms.Check(data, this);
-        // why is this method the ONLY one where the result is not wrapped into an array?
-        Electron.IpcMain.Send(window, "roms-check-reply", [missing]);
-    }
-
-    /// <summary>
     /// Copies roms from a folder to another
     /// </summary>
     /// <param name="args">The arguments</param>
-    private async Task RomsAdd(object args) {
+    private async Task RomsAdd(object args)
+    {
         var data = ConvertArgs<RomsAction>(args);
         MustCancel = false;
 
@@ -448,7 +475,8 @@ public partial class ElectronMessageHandler(
     /// Copies roms from a folder to another, from the wizard
     /// </summary>
     /// <param name="args">The arguments.</param>
-    private async Task RomsAddFromWizard(object args) {
+    private async Task RomsAddFromWizard(object args)
+    {
         var data = ConvertArgs<RomsAction>(args);
         MustCancel = false;
 
@@ -456,10 +484,37 @@ public partial class ElectronMessageHandler(
     }
 
     /// <summary>
+    /// Checks the existence of roms
+    /// </summary>
+    /// <param name="args">The arguments</param>
+    private async Task RomsCheck(object args)
+    {
+        var data = ConvertArgs<RomsAction>(args);
+        MustCancel = false;
+
+        string[] missing = await services.Roms.Check(data, this);
+        // why is this method the ONLY one where the result is not wrapped into an array?
+        Electron.IpcMain.Send(window, "roms-check-reply", [missing]);
+    }
+
+    /// <summary>
+    /// Checks a romset against a DAT file
+    /// </summary>
+    /// <param name="args">The arguments</param>
+    private async Task RomsCheckDat(object args)
+    {
+        var data = ConvertArgs<RomsActionCheckDat>(args);
+        MustCancel = false;
+
+        await services.DatChecker.CheckDat(data, this);
+    }
+
+    /// <summary>
     /// Deletes rom from a folder
     /// </summary>
     /// <param name="args">The arguments</param>
-    private async Task RomsDelete(object args) {
+    private async Task RomsDelete(object args)
+    {
         var data = ConvertArgs<RomsAction>(args);
         MustCancel = false;
 
@@ -470,7 +525,8 @@ public partial class ElectronMessageHandler(
     /// Keeps roms in a folder
     /// </summary>
     /// <param name="args">The arguments</param>
-    private async Task RomsKeep(object args) {
+    private async Task RomsKeep(object args)
+    {
         var data = ConvertArgs<RomsAction>(args);
         MustCancel = false;
 
@@ -478,22 +534,13 @@ public partial class ElectronMessageHandler(
     }
 
     /// <summary>
-    /// Checks a romset against a DAT file
-    /// </summary>
-    /// <param name="args">The arguments</param>
-    private async Task RomsCheckDat(object args) {
-        var data = ConvertArgs<RomsActionCheckDat>(args);
-        MustCancel = false;
-
-        await services.DatChecker.CheckDat(data, this);
-    }
-
-    /// <summary>
     /// Selects a file
     /// </summary>
     /// <param name="path">The default path</param>
-    private async Task SelectFile(object path) {
-        var options = new OpenDialogOptions {
+    private async Task SelectFile(object path)
+    {
+        var options = new OpenDialogOptions
+        {
             Properties = [OpenDialogProperty.openFile],
             DefaultPath = path as string ?? Environment.GetFolderPath(Environment.SpecialFolder.Personal),
             Filters = [new FileFilter { Extensions = [".csv"] }]
@@ -506,7 +553,8 @@ public partial class ElectronMessageHandler(
     /// <summary>
     /// Checks if an update is available
     /// </summary>
-    private async Task UpdateCheck() {
+    private async Task UpdateCheck()
+    {
         var current = await ArcadeManagerEnvironment.GetVersion();
 
         var update = await updater.CheckUpdate(current);
@@ -519,7 +567,8 @@ public partial class ElectronMessageHandler(
     /// Ignores the specified version for future updates
     /// </summary>
     /// <param name="args">The arguments.</param>
-    private void UpdateIgnore(object args) {
+    private void UpdateIgnore(object args)
+    {
         environment.SettingsIgnoredVersionAdd(args as string);
     }
 }

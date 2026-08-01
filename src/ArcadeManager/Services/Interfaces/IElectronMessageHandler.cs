@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using ArcadeManager.Core;
 
-namespace ArcadeManager;
+namespace ArcadeManager.Services.Interfaces;
 
 /// <summary>
 /// Interface for message handlers

@@ -2,11 +2,11 @@ using ArcadeManager.Core;
 using ArcadeManager.Core.Exceptions;
 using ArcadeManager.Core.Infrastructure.Interfaces;
 using ArcadeManager.Core.Services;
+using ArcadeManager.Services;
 using ArcadeManager.Services.Interfaces;
 using ElectronNET.API;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
-using System;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -55,16 +55,8 @@ public static class Program
     {
         Localizer.EnsureLocale();
 
-        await CreateHostBuilder(args).Build().RunAsync();
-    }
-
-    /// <summary>
-    /// Creates the host builder.
-    /// </summary>
-    /// <param name="args">The command-line arguments.</param>
-    /// <returns>The host builder</returns>
-    private static IHostBuilder CreateHostBuilder(string[] args) =>
-        Host.CreateDefaultBuilder(args)
+        await Host
+            .CreateDefaultBuilder(args)
             .ConfigureWebHostDefaults(webBuilder =>
             {
                 webBuilder.UseElectron(args, async () =>
@@ -73,5 +65,8 @@ public static class Program
                     await StartupElectron.ElectronBootstrap(mainWindow);
                 });
                 webBuilder.UseStartup<Startup>();
-            });
+            })
+            .Build()
+            .RunAsync();
+    }
 }
