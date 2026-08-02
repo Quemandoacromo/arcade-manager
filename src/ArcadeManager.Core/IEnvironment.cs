@@ -1,4 +1,3 @@
-using System;
 using ArcadeManager.Core.Models;
 
 namespace ArcadeManager.Core;
@@ -13,7 +12,7 @@ public interface IEnvironment
     /// </summary>
     /// <returns>The application data</returns>
     AppData GetAppData();
-    
+
     /// <summary>
     /// Gets the application base path
     /// </summary>
@@ -27,6 +26,12 @@ public interface IEnvironment
     string GetSettingsOs();
 
     /// <summary>
+    /// Gets the current user settings
+    /// </summary>
+    /// <returns>The current user settings</returns>
+    UserSettings SettingsGet();
+
+    /// <summary>
     /// Adds the specified version to the list of ignored versions
     /// </summary>
     /// <param name="version">The version.</param>
@@ -38,4 +43,10 @@ public interface IEnvironment
     /// <param name="version">The version.</param>
     /// <returns>Whether the version should be ignored</returns>
     bool SettingsIgnoredVersionHas(string version);
+
+    /// <summary>
+    /// Saves the specified user settings
+    /// </summary>
+    /// <param name="settings">The settings to save.</param>
+    void SettingsSave(UserSettings settings);
 }

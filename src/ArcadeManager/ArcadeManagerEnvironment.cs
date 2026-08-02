@@ -15,7 +15,7 @@ namespace ArcadeManager;
 public class ArcadeManagerEnvironment : IEnvironment
 {
     private static readonly SettingsManager mgr = new(@"ArcadeManager\userSettings.json");
-    private static readonly Settings settings = mgr.LoadSettings() ?? new Settings();
+    private static readonly UserSettings settings = mgr.LoadSettings() ?? new UserSettings();
     private static AppData _appData;
     private static string _basePath;
     private static string _platform;
@@ -84,6 +84,114 @@ public class ArcadeManagerEnvironment : IEnvironment
     }
 
     /// <summary>
+    /// Gets or sets the path to the last used main CSV file
+    /// </summary>
+    public static string SettingsLastCsvMainPath
+    {
+        get
+        {
+            return settings.LastCsvMainPath ?? string.Empty;
+        }
+
+        set
+        {
+            settings.LastCsvMainPath = value;
+
+            mgr.SaveSettings(settings);
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the path to the last used secondary CSV file
+    /// </summary>
+    public static string SettingsLastCsvSecondaryPath
+    {
+        get
+        {
+            return settings.LastCsvSecondaryPath ?? string.Empty;
+        }
+
+        set
+        {
+            settings.LastCsvSecondaryPath = value;
+
+            mgr.SaveSettings(settings);
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the path to the last used target CSV file
+    /// </summary>
+    public static string SettingsLastCsvTargetPath
+    {
+        get
+        {
+            return settings.LastCsvTargetPath ?? string.Empty;
+        }
+
+        set
+        {
+            settings.LastCsvTargetPath = value;
+
+            mgr.SaveSettings(settings);
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the path to the last used CSV to manage roms
+    /// </summary>
+    public static string SettingsLastRomCsvPath
+    {
+        get
+        {
+            return settings.LastRomCsvPath ?? string.Empty;
+        }
+
+        set
+        {
+            settings.LastRomCsvPath = value;
+
+            mgr.SaveSettings(settings);
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the path to the last used romset
+    /// </summary>
+    public static string SettingsLastRomFullsetPath
+    {
+        get
+        {
+            return settings.LastRomFullsetPath ?? string.Empty;
+        }
+
+        set
+        {
+            settings.LastRomFullsetPath = value;
+
+            mgr.SaveSettings(settings);
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the path to the last used target rom selection
+    /// </summary>
+    public static string SettingsLastRomTargetPath
+    {
+        get
+        {
+            return settings.LastRomTargetPath ?? string.Empty;
+        }
+
+        set
+        {
+            settings.LastRomTargetPath = value;
+
+            mgr.SaveSettings(settings);
+        }
+    }
+
+    /// <summary>
     /// Gets or sets the settings OS.
     /// </summary>
     public static string SettingsOs
@@ -138,6 +246,17 @@ public class ArcadeManagerEnvironment : IEnvironment
     }
 
     /// <summary>
+    /// Gets the current user settings
+    /// </summary>
+    /// <returns>
+    /// The current user settings
+    /// </returns>
+    public UserSettings SettingsGet()
+    {
+        return settings;
+    }
+
+    /// <summary>
     /// Adds the specified version to the list of ignored versions
     /// </summary>
     /// <param name="version">The version.</param>
@@ -158,5 +277,14 @@ public class ArcadeManagerEnvironment : IEnvironment
     public bool SettingsIgnoredVersionHas(string version)
     {
         return settings.IgnoredVersions.Contains(version);
+    }
+
+    /// <summary>
+    /// Saves the specified user settings
+    /// </summary>
+    /// <param name="settings">The settings to save.</param>
+    public void SettingsSave(UserSettings settings)
+    {
+        mgr.SaveSettings(settings);
     }
 }

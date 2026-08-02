@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Threading;
 using ArcadeManager.Core.Infrastructure;
 using ArcadeManager.Core.Models;
 using ArcadeManager.Models;
@@ -15,6 +16,7 @@ namespace ArcadeManager;
 /// <param name="fileName">Name of the file.</param>
 public class SettingsManager(string fileName)
 {
+    private static readonly Lock FileLock = new();
     private static AppSettingsModel appSettingsModel;
     private readonly string _filePath = GetLocalFilePath(fileName);
 
@@ -39,26 +41,29 @@ public class SettingsManager(string fileName)
     /// Loads the settings.
     /// </summary>
     /// <returns>The settings</returns>
-    public Settings LoadSettings() =>
+    public UserSettings LoadSettings() =>
         File.Exists(_filePath) ?
-        Serializer.Deserialize<Settings>(File.ReadAllText(_filePath)) :
+        Serializer.Deserialize<UserSettings>(File.ReadAllText(_filePath)) :
         null;
 
     /// <summary>
     /// Saves the settings.
     /// </summary>
     /// <param name="settings">The settings.</param>
-    public void SaveSettings(Settings settings)
+    public void SaveSettings(UserSettings settings)
     {
         string json = Serializer.Serialize(settings);
 
-        var fi = new FileInfo(_filePath);
-        if (!Directory.Exists(fi.DirectoryName))
+        lock (FileLock)
         {
-            Directory.CreateDirectory(fi.DirectoryName);
-        }
+            var fi = new FileInfo(_filePath);
+            if (!Directory.Exists(fi.DirectoryName))
+            {
+                Directory.CreateDirectory(fi.DirectoryName);
+            }
 
-        File.WriteAllText(_filePath, json);
+            File.WriteAllText(_filePath, json);
+        }
     }
 
     /// <summary>

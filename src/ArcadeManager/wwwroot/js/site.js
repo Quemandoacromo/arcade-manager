@@ -30,7 +30,7 @@ $(() => {
         else if (btn.hasClass('new')) {
             // create a new file
             newFile(existingPath, (filename) => {
-                if (typeof filename !== 'undefined' && filename !== '') {
+                if (filename !== undefined && filename !== '') {
                     if (!filename.endsWith('.csv')) { filename += '.csv'; }
                     input.val(filename);
                 }
@@ -216,12 +216,12 @@ function checkUpdate(cb) {
  */
 function checkRoms(file, folder, cb) {
     ipc('roms-check', { main: file, romset: folder }, (result) => {
-        if (!result || result.length === 0) {
+        if (!result?.missing || result.missing.length === 0) {
             // no missing files
             cb();
         } else {
             // missing files: make the user confirm
-            $('#filesListModal #filesList').html(result.join('<br>\n'));
+            $('#filesListModal #filesList').html(result.missing.join('<br>\n'));
             $('#filesListModal').modal('show');
 
             $('#filesListModal #filesListContinue').off('click').one('click', () => {

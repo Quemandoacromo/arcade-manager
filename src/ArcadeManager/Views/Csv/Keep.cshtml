@@ -14,11 +14,12 @@
 
 @Html.Raw(Localizer["CSV_KEEP_INTRO"])
 
+<!-- main CSV file -->
 <div class="input-group mb-0">
     <div class="input-group-prepend">
         <label class="input-group-text" for="fileMainCsv">@Localizer["CSV_KEEP_MAINFILE"]</label>
     </div>
-    <input type="text" class="form-control" id="fileMainCsv">
+    <input type="text" class="form-control" id="fileMainCsv" value="@ArcadeManagerEnvironment.SettingsLastCsvMainPath">
     <div class="input-group-append">
         <button class="btn btn-outline-primary browse" type="button" data-input="fileMainCsv">@Localizer["BROWSE"]</button>
     </div>
@@ -32,7 +33,7 @@
     <div class="input-group-prepend">
         <label class="input-group-text" for="fileSecondaryCsv">@Localizer["CSV_KEEP_SECONDARY"]</label>
     </div>
-    <input type="text" class="form-control" id="fileSecondaryCsv">
+    <input type="text" class="form-control" id="fileSecondaryCsv" value="@ArcadeManagerEnvironment.SettingsLastCsvSecondaryPath">
     <div class="input-group-append">
         <button class="btn btn-outline-secondary browse" type="button" data-input="fileSecondaryCsv">@Localizer["BROWSE"]</button>
     </div>
@@ -46,7 +47,7 @@
     <div class="input-group-prepend">
         <label class="input-group-text" for="fileTarget">@Localizer["CSV_KEEP_TARGET"]</label>
     </div>
-    <input type="text" class="form-control" id="fileTarget">
+    <input type="text" class="form-control" id="fileTarget" value="@ArcadeManagerEnvironment.SettingsLastCsvTargetPath">
     <div class="input-group-append">
         <button class="btn btn-outline-secondary browse new" type="button" data-input="fileTarget">@Localizer["BROWSE"]</button>
     </div>

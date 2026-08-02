@@ -6,7 +6,9 @@ using ArcadeManager.Core.Models.Roms;
 using ArcadeManager.Services.Interfaces;
 using ElectronNET.API;
 using ElectronNET.API.Entities;
+using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace ArcadeManager.Services;
@@ -211,19 +213,26 @@ public partial class ElectronMessageHandler(
     /// <param name="args">The arguments</param>
     /// <returns>The object</returns>
     /// <exception cref="ArgumentException">Unable to convert arguments to JObject</exception>
-    private static T ConvertArgs<T>(object args)
+    private static T ConvertArgs<T>(object args) where T : class, new()
     {
         if (args == null)
         {
             return default;
         }
 
-        if (args.GetType() != typeof(Newtonsoft.Json.Linq.JObject))
+        if (args.GetType() == typeof(Newtonsoft.Json.Linq.JObject))
         {
-            throw new ArgumentException("Unable to convert arguments to JObject");
+            return ((Newtonsoft.Json.Linq.JObject)args).ToObject<T>();
         }
 
-        return ((Newtonsoft.Json.Linq.JObject)args).ToObject<T>();
+        if (args is IDictionary<string, object>)
+        {
+            // reserialize dictionary to object then re-deserialize it because it's slower but simpler for me at this stage
+            var serialized = JsonConvert.SerializeObject(args);
+            return JsonConvert.DeserializeObject<T>(serialized);
+        }
+
+        throw new NotImplementedException("Unknown type of args");
     }
 
     /// <summary>
@@ -282,6 +291,10 @@ public partial class ElectronMessageHandler(
         MustCancel = false;
 
         await services.Csv.ConvertDat(data.Main, data.Target, this);
+
+        var settings = environment.SettingsGet();
+        settings.LastCsvTargetPath = data.Target;
+        environment.SettingsSave(settings);
     }
 
     /// <summary>
@@ -294,6 +307,10 @@ public partial class ElectronMessageHandler(
         MustCancel = false;
 
         await services.Csv.ConvertIni(data.Main, data.Target, this);
+
+        var settings = environment.SettingsGet();
+        settings.LastCsvTargetPath = data.Target;
+        environment.SettingsSave(settings);
     }
 
     /// <summary>
@@ -306,6 +323,12 @@ public partial class ElectronMessageHandler(
         MustCancel = false;
 
         await services.Csv.Keep(data.Main, data.Secondary, data.Target, this);
+
+        var settings = environment.SettingsGet();
+        settings.LastCsvMainPath = data.Main;
+        settings.LastCsvSecondaryPath = data.Secondary;
+        settings.LastCsvTargetPath = data.Target;
+        environment.SettingsSave(settings);
     }
 
     /// <summary>
@@ -318,6 +341,11 @@ public partial class ElectronMessageHandler(
         MustCancel = false;
 
         await services.Csv.ListFiles(data.Main, data.Target, this);
+
+        var settings = environment.SettingsGet();
+        settings.LastCsvMainPath = data.Main;
+        settings.LastCsvTargetPath = data.Target;
+        environment.SettingsSave(settings);
     }
 
     /// <summary>
@@ -330,6 +358,12 @@ public partial class ElectronMessageHandler(
         MustCancel = false;
 
         await services.Csv.Merge(data.Main, data.Secondary, data.Target, this);
+
+        var settings = environment.SettingsGet();
+        settings.LastCsvMainPath = data.Main;
+        settings.LastCsvSecondaryPath = data.Secondary;
+        settings.LastCsvTargetPath = data.Target;
+        environment.SettingsSave(settings);
     }
 
     /// <summary>
@@ -342,6 +376,12 @@ public partial class ElectronMessageHandler(
         MustCancel = false;
 
         await services.Csv.Remove(data.Main, data.Secondary, data.Target, this);
+
+        var settings = environment.SettingsGet();
+        settings.LastCsvMainPath = data.Main;
+        settings.LastCsvSecondaryPath = data.Secondary;
+        settings.LastCsvTargetPath = data.Target;
+        environment.SettingsSave(settings);
     }
 
     /// <summary>
@@ -469,6 +509,12 @@ public partial class ElectronMessageHandler(
         MustCancel = false;
 
         await services.Roms.Add(data, this);
+
+        var settings = environment.SettingsGet();
+        settings.LastRomCsvPath = data.Main;
+        settings.LastRomFullsetPath = data.Romset;
+        settings.LastRomTargetPath = data.Selection;
+        environment.SettingsSave(settings);
     }
 
     /// <summary>
@@ -493,8 +539,8 @@ public partial class ElectronMessageHandler(
         MustCancel = false;
 
         string[] missing = await services.Roms.Check(data, this);
-        // why is this method the ONLY one where the result is not wrapped into an array?
-        Electron.IpcMain.Send(window, "roms-check-reply", [missing]);
+        // wrapping into an object because ElectronNet has a bug that sends only the first item of an array
+        Electron.IpcMain.Send(window, "roms-check-reply", new { missing });
     }
 
     /// <summary>
@@ -507,6 +553,12 @@ public partial class ElectronMessageHandler(
         MustCancel = false;
 
         await services.DatChecker.CheckDat(data, this);
+
+        var settings = environment.SettingsGet();
+        settings.LastRomCsvPath = data.CsvFilter;
+        settings.LastRomFullsetPath = data.Romset;
+        settings.LastRomTargetPath = data.TargetFolder;
+        environment.SettingsSave(settings);
     }
 
     /// <summary>
@@ -519,6 +571,11 @@ public partial class ElectronMessageHandler(
         MustCancel = false;
 
         await services.Roms.Delete(data, this);
+
+        var settings = environment.SettingsGet();
+        settings.LastRomCsvPath = data.Main;
+        settings.LastRomTargetPath = data.Selection;
+        environment.SettingsSave(settings);
     }
 
     /// <summary>
@@ -531,6 +588,11 @@ public partial class ElectronMessageHandler(
         MustCancel = false;
 
         await services.Roms.Keep(data, this);
+
+        var settings = environment.SettingsGet();
+        settings.LastRomCsvPath = data.Main;
+        settings.LastRomTargetPath = data.Selection;
+        environment.SettingsSave(settings);
     }
 
     /// <summary>

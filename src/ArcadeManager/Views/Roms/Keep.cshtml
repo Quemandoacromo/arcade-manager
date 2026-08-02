@@ -23,11 +23,12 @@
     @Localizer["ROMS_DELETE_ALERT"]
 </div>
 
+<!-- selection CSV file -->
 <div class="input-group mb-0">
     <div class="input-group-prepend">
         <label class="input-group-text" for="fileMainCsv">@Localizer["ROMS_COPY_CSVFILE"]</label>
     </div>
-    <input type="text" class="form-control" id="fileMainCsv">
+    <input type="text" class="form-control" id="fileMainCsv" value="@ArcadeManagerEnvironment.SettingsLastRomCsvPath">
     <div class="input-group-append">
         <button class="btn btn-outline-primary browse" type="button" data-input="fileMainCsv">@Localizer["BROWSE"]</button>
     </div>
@@ -41,7 +42,7 @@
     <div class="input-group-prepend">
         <label class="input-group-text" for="fileRomSelection">@Localizer["ROMS_KEEP_FOLDER"]</label>
     </div>
-    <input type="text" class="form-control" id="fileRomSelection">
+    <input type="text" class="form-control" id="fileRomSelection" value="@ArcadeManagerEnvironment.SettingsLastRomTargetPath">
     <div class="input-group-append">
         <button class="btn btn-outline-secondary browse folder" type="button" data-input="fileRomSelection">@Localizer["BROWSE"]</button>
     </div>

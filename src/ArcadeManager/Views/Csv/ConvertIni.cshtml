@@ -14,6 +14,7 @@
 
 @Html.Raw(Localizer["CSV_CONVERTINI_INTRO"])
 
+<!-- INI file to convert -->
 <div class="input-group mb-0">
     <div class="input-group-prepend">
         <label class="input-group-text" for="fileMain">@Localizer["CSV_CONVERTINI_MAINFILE"]</label>
@@ -27,11 +28,12 @@
     <small class="form-text text-muted">@Localizer["CSV_CONVERTINI_MAINFILE_DESC"]</small>
 </p>
 
+<!-- target CSV -->
 <div class="input-group mb-0">
     <div class="input-group-prepend">
         <label class="input-group-text" for="fileTarget">@Localizer["CSV_CONVERTINI_TARGET"]</label>
     </div>
-    <input type="text" class="form-control" id="fileTarget">
+    <input type="text" class="form-control" id="fileTarget" value="@ArcadeManagerEnvironment.SettingsLastCsvTargetPath">
     <div class="input-group-append">
         <button class="btn btn-outline-secondary browse folder" type="button" data-input="fileTarget">@Localizer["BROWSE"]</button>
     </div>

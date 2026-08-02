@@ -3,8 +3,9 @@ let processedFormat = 'list';
 
 $(() => {
     // bind progress events
-    ipcRenderer.on('progress', (origin, target, data) => {
-        data = !data ? {} : data[0];
+    ipcRenderer.on('progress', (origin, data) => {
+        if (data === null || data === undefined) { data = {}; }
+        if (Array.isArray(data)) { data = data[0]; }
 
         if (data.init) {
             console.log('Init: ' + data.label);
@@ -22,7 +23,8 @@ $(() => {
 
     // bind display of files processed
     ipcRenderer.on('progress-processed', (origin, data) => {
-        data = !data ? {} : data[0];
+        if (data === null || data === undefined) { data = {}; }
+        if (Array.isArray(data)) { data = data[0]; }
         
         progressProcessed(data);
     });
@@ -130,7 +132,7 @@ function progress(total, current, item) {
  * @param {Boolean} isError whether the message is an error message
  */
 function progressLog(msg, isError) {
-    if (typeof isError === 'undefined') { isError = false; }
+    if (isError === undefined) { isError = false; }
 
     let p = $('#progress');
     let log = p.find('.log');

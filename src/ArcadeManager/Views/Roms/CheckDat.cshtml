@@ -24,7 +24,7 @@
     <div class="input-group-prepend">
         <label class="input-group-text" for="romset">@Localizer["ROMS_CHECKDAT_ROMSET"]</label>
     </div>
-    <input type="text" class="form-control" id="romset">
+    <input type="text" class="form-control" id="romset" value="@ArcadeManagerEnvironment.SettingsLastRomFullsetPath">
     <div class="input-group-append">
         <button class="btn btn-outline-secondary browse folder" type="button" data-input="romset">@Localizer["BROWSE"]</button>
     </div>
@@ -117,7 +117,7 @@
     <div class="input-group-prepend">
         <label class="input-group-text" for="fixFolder">@Localizer["ROMS_CHECKDAT_FIXFOLDER"]</label>
     </div>
-    <input type="text" class="form-control" id="fixFolder" disabled>
+    <input type="text" class="form-control" id="fixFolder" disabled value="@ArcadeManagerEnvironment.SettingsLastRomTargetPath">
     <div class="input-group-append">
         <button class="btn btn-outline-secondary browse folder" type="button" data-input="fixFolder" disabled>@Localizer["BROWSE"]</button>
     </div>

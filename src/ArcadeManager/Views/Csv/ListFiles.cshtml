@@ -14,11 +14,12 @@
 
 @Html.Raw(Localizer["CSV_LIST_INTRO"])
 
+<!-- folder to list the files from -->
 <div class="input-group mb-0">
     <div class="input-group-prepend">
         <label class="input-group-text" for="folderMain">@Localizer["CSV_LIST_FOLDER"]</label>
     </div>
-    <input type="text" class="form-control" id="folderMain">
+    <input type="text" class="form-control" id="folderMain" value="@ArcadeManagerEnvironment.SettingsLastRomTargetPath">
     <div class="input-group-append">
         <button class="btn btn-outline-primary browse folder" type="button" data-input="folderMain">@Localizer["BROWSE"]</button>
     </div>
@@ -27,11 +28,12 @@
     <small class="form-text text-muted">@Localizer["CSV_LIST_FOLDER_DESC"]</small>
 </p>
 
+<!-- target CSV -->
 <div class="input-group mb-0">
     <div class="input-group-prepend">
         <label class="input-group-text" for="fileTarget">@Localizer["CSV_LIST_TARGET"]</label>
     </div>
-    <input type="text" class="form-control" id="fileTarget">
+    <input type="text" class="form-control" id="fileTarget" value="@ArcadeManagerEnvironment.SettingsLastCsvTargetPath">
     <div class="input-group-append">
         <button class="btn btn-outline-secondary browse new" type="button" data-input="fileTarget">@Localizer["BROWSE"]</button>
     </div>
