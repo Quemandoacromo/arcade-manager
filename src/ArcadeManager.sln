@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 18
-VisualStudioVersion = 18.8.12023.21 stable
+VisualStudioVersion = 18.8.12023.21
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentation", "{08F4E0BB-E1D1-44AB-9E08-8DA3C2D8CEB9}"
 	ProjectSection(SolutionItems) = preProject
@@ -16,15 +16,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArcadeManager.Core.Tests", "ArcadeManager.Core.Tests\ArcadeManager.Core.Tests.csproj", "{73460E1D-AA4D-49F0-899D-C363762EAA7B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArcadeManager.Console", "ArcadeManager.Console\ArcadeManager.Console.csproj", "{5956DA38-7CC7-4195-8FFA-9B17B3B8A27E}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{1275288D-1B41-427C-80D8-495DA9ACF428}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{5501CBE7-A41E-430D-AE9F-6280AACEC0DF}"
-	ProjectSection(SolutionItems) = preProject
-		..\.github\workflows\linux.yml = ..\.github\workflows\linux.yml
-		..\.github\workflows\mac.yml = ..\.github\workflows\mac.yml
-		..\.github\workflows\win.yml = ..\.github\workflows\win.yml
-	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,9 +42,6 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{5501CBE7-A41E-430D-AE9F-6280AACEC0DF} = {1275288D-1B41-427C-80D8-495DA9ACF428}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {293719ED-EDF9-429F-A398-782A18393219}
