@@ -59,7 +59,7 @@ public class Csv(IFileSystem fs) : ICsv {
     /// <param name="target">The target file.</param>
     /// <param name="messageHandler">The message handler.</param>
     public async Task ConvertDat(string main, string target, IMessageHandler messageHandler) {
-        messageHandler.Init("DAT conversion");
+        messageHandler.ProgressInit("DAT conversion");
 
         try {
             XmlReaderSettings settings = new() {
@@ -99,12 +99,12 @@ public class Csv(IFileSystem fs) : ICsv {
                         await outStreamWriter.WriteLineAsync(sb.ToString());
                     }
 
-                    messageHandler.Done("DAT file converted", target);
+                    messageHandler.ProgressDone("DAT file converted", target);
                 });
             });
         }
         catch (Exception ex) {
-            messageHandler.Error(ex);
+            messageHandler.ProgressError(ex);
         }
     }
 
@@ -115,7 +115,7 @@ public class Csv(IFileSystem fs) : ICsv {
     /// <param name="target">The target folder to create files into</param>
     /// <param name="messageHandler">The message handler.</param>
     public async Task ConvertIni(string main, string target, IMessageHandler messageHandler) {
-        messageHandler.Init("INI conversion");
+        messageHandler.ProgressInit("INI conversion");
 
         try {
             var data = new Dictionary<string, List<IniEntry>>();
@@ -157,10 +157,10 @@ public class Csv(IFileSystem fs) : ICsv {
                 });
             }
 
-            messageHandler.Done("INI file converted", target);
+            messageHandler.ProgressDone("INI file converted", target);
         }
         catch (Exception ex) {
-            messageHandler.Error(ex);
+            messageHandler.ProgressError(ex);
         }
     }
 
@@ -192,7 +192,7 @@ public class Csv(IFileSystem fs) : ICsv {
     /// <param name="messageHandler">The message handler.</param>
     /// <exception cref="DirectoryNotFoundException">Unable to find the folder {main}</exception>
     public async Task ListFiles(string main, string target, IMessageHandler messageHandler) {
-        messageHandler.Init("List files to a CSV");
+        messageHandler.ProgressInit("List files to a CSV");
 
         try {
             if (!fs.DirectoryExists(main)) { throw new PathNotFoundException($"Unable to find the folder {main}"); }
@@ -214,10 +214,10 @@ public class Csv(IFileSystem fs) : ICsv {
                 }
             });
 
-            messageHandler.Done("Files listed", target);
+            messageHandler.ProgressDone("Files listed", target);
         }
         catch (Exception ex) {
-            messageHandler.Error(ex);
+            messageHandler.ProgressError(ex);
         }
     }
 
@@ -383,7 +383,7 @@ public class Csv(IFileSystem fs) : ICsv {
     /// <param name="action">The action to process.</param>
     /// <returns></returns>
     private async Task WorkOnTwoFiles(string main, string secondary, string target, IMessageHandler messageHandler, string init, Func<CsvGamesList, CsvGamesList, CsvGamesList> action) {
-        messageHandler.Init(init);
+        messageHandler.ProgressInit(init);
 
         try {
             var steps = 5;
@@ -405,10 +405,10 @@ public class Csv(IFileSystem fs) : ICsv {
             messageHandler.Progress($"save to file {fiTarget}", steps, ++current);
             await WriteFile(result, target);
 
-            messageHandler.Done($"{current}/{steps} - Done! Result has {result.Games.Count} entries", target);
+            messageHandler.ProgressDone($"{current}/{steps} - Done! Result has {result.Games.Count} entries", target);
         }
         catch (Exception ex) {
-            messageHandler.Error(ex);
+            messageHandler.ProgressError(ex);
         }
     }
 

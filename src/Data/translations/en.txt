@@ -180,6 +180,7 @@ ROMS_DELETE_ALERT=Take care not to enter the full romset path! The files cannot 
 ROMS_DELETE_FOLDER=Roms folder
 ROMS_DELETE_FOLDER_DESC=The folder containing the roms you want to delete
 ROMS_DELETE_DELETE=Delete listed roms
+ROMS_FILESTODELETE=The following files will be deleted
 
 ROMS_KEEP_TITLE=Keep only roms listed
 ROMS_KEEP_INTRO=Select a CSV file listing the roms you want to keep, and the folder containing the roms.<br>This will only keep the roms that are listed in the CSV file, and remove all other roms.<br>For example, using a "working games" CSV file will remove all games that are not working.

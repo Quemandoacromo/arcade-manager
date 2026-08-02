@@ -37,7 +37,7 @@ public class Overlays(IDownloader downloaderService, IFileSystem fs, IEnvironmen
     /// config {game} to find image (overlay0_overlay)
     /// </exception>
     public async Task Download(Actions.OverlaysAction data, IMessageHandler messageHandler) {
-        messageHandler.Init("Download overlay pack");
+        messageHandler.ProgressInit("Download overlay pack");
 
         try {
             var os = environment.GetSettingsOs();
@@ -72,10 +72,10 @@ public class Overlays(IDownloader downloaderService, IFileSystem fs, IEnvironmen
                 installed += await DownloadOverlayForRom(total, current, r, pack, data, romCfgFolder, messageHandler);
             }
 
-            messageHandler.Done($"Installed {installed} overlays", "");
+            messageHandler.ProgressDone($"Installed {installed} overlays", "");
         }
         catch (Exception ex) {
-            messageHandler.Error(ex);
+            messageHandler.ProgressError(ex);
         }
     }
 

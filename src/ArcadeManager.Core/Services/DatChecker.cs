@@ -18,17 +18,17 @@ public class DatChecker(IFileSystem fs, ICsv csvService, IDatFile datFile) : IDa
     /// <param name="messageHandler">The message handler</param>
     public async Task CheckDat(RomsActionCheckDat args, IMessageHandler messageHandler)
     {
-        messageHandler.Init("Checking a romset against a DAT file");
+        messageHandler.ProgressInit("Checking a romset against a DAT file");
 
         if (!fs.DirectoryExists(args.Romset))
         {
-            messageHandler.Error(new DirectoryNotFoundException($"Folder {args.Romset} not found"));
+            messageHandler.ProgressError(new DirectoryNotFoundException($"Folder {args.Romset} not found"));
             return;
         }
 
         if (args.Romset.Equals(args.TargetFolder, StringComparison.InvariantCultureIgnoreCase))
         {
-            messageHandler.Error(new ArgumentException($"Source and target folder are identical"));
+            messageHandler.ProgressError(new ArgumentException($"Source and target folder are identical"));
             return;
         }
 
@@ -81,11 +81,11 @@ public class DatChecker(IFileSystem fs, ICsv csvService, IDatFile datFile) : IDa
             }
 
             var andFixed = args.ChangeType ? "and fixed" : "";
-            messageHandler.Done($"Checked {andFixed} {allGames.Count} roms", args.TargetFolder);
+            messageHandler.ProgressDone($"Checked {andFixed} {allGames.Count} roms", args.TargetFolder);
         }
         catch (Exception ex)
         {
-            messageHandler.Error(ex);
+            messageHandler.ProgressError(ex);
         }
     }
 
@@ -124,7 +124,7 @@ public class DatChecker(IFileSystem fs, ICsv csvService, IDatFile datFile) : IDa
             if (args.ReportAll)
             {
                 // report all errors
-                messageHandler.Processed(game);
+                messageHandler.ProgressProcessed(game);
 
                 processed.Add(game);
             }
@@ -145,7 +145,7 @@ public class DatChecker(IFileSystem fs, ICsv csvService, IDatFile datFile) : IDa
         var files = fs.GetZipFiles(zip, gameFile, args.Romset, args.CheckSha1);
         CheckFilesOfGame(zip, game, args.CheckSha1, messageHandler);
 
-        messageHandler.Processed(game);
+        messageHandler.ProgressProcessed(game);
 
         return [.. files.Select(f => f.ToReadOnly(gameFile))];
     }
@@ -286,7 +286,7 @@ public class DatChecker(IFileSystem fs, ICsv csvService, IDatFile datFile) : IDa
                 GameRomFilesList copiedZipFiles = [.. fs.GetZipFiles(gameFileFixed, false)];
                 CleanupFilesOfGame(gameFileFixed, game, copiedZipFiles);
 
-                messageHandler.Processed(game);
+                messageHandler.ProgressProcessed(game);
 
                 continue;
             }
@@ -363,7 +363,7 @@ public class DatChecker(IFileSystem fs, ICsv csvService, IDatFile datFile) : IDa
             fs.FileDelete(gameFileFixed);
         }
 
-        messageHandler.Processed(game);
+        messageHandler.ProgressProcessed(game);
     }
 
     private void CleanupFilesOfGame(string zipPath, GameRom game, GameRomFilesList zipFiles)

@@ -1,6 +1,4 @@
-﻿using System.Runtime.InteropServices;
-using ArcadeManager.Core;
-using ArcadeManager.Core.Actions;
+﻿using ArcadeManager.Core.Actions;
 using ArcadeManager.Core.Exceptions;
 using ArcadeManager.Core.Infrastructure.Interfaces;
 using ArcadeManager.Core.Models;
@@ -15,8 +13,8 @@ public class Roms : IRoms
 {
     private readonly List<string> bioslist;
     private readonly BiosMatchList biosmatch = new();
-    private readonly DeviceMatchList devicematch = new();
     private readonly ICsv csvService;
+    private readonly DeviceMatchList devicematch = new();
     private readonly IFileSystem fs;
 
     /// <summary>
@@ -52,7 +50,7 @@ public class Roms : IRoms
     /// <exception cref="DirectoryNotFoundException">Unable to find romset folder {args.romset}</exception>
     public async Task Add(RomsAction args, IMessageHandler messageHandler)
     {
-        messageHandler.Init("Copying roms");
+        messageHandler.ProgressInit("Copying roms");
 
         try
         {
@@ -67,11 +65,11 @@ public class Roms : IRoms
             // copy the games
             var copied = CopyGamesList(args, content, messageHandler);
 
-            messageHandler.Done($"Copied {copied} file(s)", args.Selection);
+            messageHandler.ProgressDone($"Copied {copied} file(s)", args.Selection);
         }
         catch (Exception ex)
         {
-            messageHandler.Error(ex);
+            messageHandler.ProgressError(ex);
         }
     }
 
@@ -87,7 +85,7 @@ public class Roms : IRoms
         string emulator = emulatorFiles[0];
         string[] files = emulatorFiles[1].Split(",", StringSplitOptions.RemoveEmptyEntries);
 
-        messageHandler.Init("Copying roms");
+        messageHandler.ProgressInit("Copying roms");
 
         try
         {
@@ -108,11 +106,11 @@ public class Roms : IRoms
             // copy the games
             var copied = CopyGamesList(args, content, messageHandler);
 
-            messageHandler.Done($"Copied {copied} file(s)", args.Selection);
+            messageHandler.ProgressDone($"Copied {copied} file(s)", args.Selection);
         }
         catch (Exception ex)
         {
-            messageHandler.Error(ex);
+            messageHandler.ProgressError(ex);
         }
     }
 
@@ -148,7 +146,7 @@ public class Roms : IRoms
         }
         catch (Exception ex)
         {
-            messageHandler.Error(ex);
+            messageHandler.ProgressError(ex);
         }
 
         return [];
@@ -163,7 +161,7 @@ public class Roms : IRoms
     /// <exception cref="DirectoryNotFoundException">Unable to find selection folder {args.selection}</exception>
     public async Task Delete(RomsAction args, IMessageHandler messageHandler)
     {
-        messageHandler.Init("Deleting roms");
+        messageHandler.ProgressInit("Deleting roms");
 
         try
         {
@@ -185,6 +183,8 @@ public class Roms : IRoms
 
                 // build vars
                 var zip = $"{game}.zip";
+                if (args.Filter.Contains(zip)) { continue; }
+
                 var filePath = fs.PathJoin(args.Selection, zip);
 
                 messageHandler.Progress(game, total, i);
@@ -193,6 +193,8 @@ public class Roms : IRoms
                 if (!fs.FileExists(filePath))
                 {
                     zip = $"{game}.7z";
+                    if (args.Filter.Contains(zip)) { continue; }
+
                     filePath = fs.PathJoin(args.Romset, zip);
                 }
 
@@ -206,12 +208,48 @@ public class Roms : IRoms
                 deleted++;
             }
 
-            messageHandler.Done($"Deleted {deleted} file(s)", args.Selection);
+            messageHandler.ProgressDone($"Deleted {deleted} file(s)", args.Selection);
         }
         catch (Exception ex)
         {
-            messageHandler.Error(ex);
+            messageHandler.ProgressError(ex);
         }
+    }
+
+    public async Task<string[]> DeleteCheck(RomsAction args, IMessageHandler messageHandler)
+    {
+        List<string> result = [];
+
+        // check files and folders
+        if (!fs.FileExists(args.Main)) { throw new PathNotFoundException($"Unable to find main CSV file {args.Main}"); }
+        if (!fs.DirectoryExists(args.Selection)) { throw new PathNotFoundException($"Unable to find selection folder {args.Selection}"); }
+
+        // read CSV file
+        var content = await csvService.ReadFile(args.Main, false);
+
+        foreach (var game in content.Games.Select(g => g.Name))
+        {
+            // build vars
+            var zip = $"{game}.zip";
+            var filePath = fs.PathJoin(args.Selection, zip);
+
+            // check that source rom exists
+            if (!fs.FileExists(filePath))
+            {
+                zip = $"{game}.7z";
+                filePath = fs.PathJoin(args.Romset, zip);
+            }
+
+            // still not found: next
+            if (!fs.FileExists(filePath))
+            {
+                continue;
+            }
+
+            result.Add(zip);
+        }
+
+        return [.. result];
     }
 
     /// <summary>
@@ -223,7 +261,7 @@ public class Roms : IRoms
     /// <exception cref="DirectoryNotFoundException">Unable to find selection folder {args.selection}</exception>
     public async Task Keep(RomsAction args, IMessageHandler messageHandler)
     {
-        messageHandler.Init("Filtering roms");
+        messageHandler.ProgressInit("Filtering roms");
 
         try
         {
@@ -258,6 +296,9 @@ public class Roms : IRoms
                     continue;
                 }
 
+                // don't delete if unchecked
+                if (args.Filter.Contains(fs.FileName(f))) { continue; }
+
                 // delete if it's not found in the provided list
                 if (!content.Games.Any(c => c.Name.Equals(nameNoExt, StringComparison.InvariantCultureIgnoreCase)))
                 {
@@ -266,12 +307,94 @@ public class Roms : IRoms
                 }
             }
 
-            messageHandler.Done($"Deleted {deleted} files", args.Selection);
+            messageHandler.ProgressDone($"Deleted {deleted} files", args.Selection);
         }
         catch (Exception ex)
         {
-            messageHandler.Error(ex);
+            messageHandler.ProgressError(ex);
         }
+    }
+
+    /// <summary>
+    /// Gets the list of files to be deleted from a folder based on a keep list
+    /// </summary>
+    /// <param name="args">The arguments.</param>
+    /// <param name="message">The message.</param>
+    /// <returns>
+    /// The files to be deleted
+    /// </returns>
+    /// <exception cref="PathNotFoundException">
+    /// Unable to find main CSV file {args.Main}
+    /// or
+    /// Unable to find selection folder {args.Selection}
+    /// </exception>
+    public async Task<string[]> KeepCheck(RomsAction args, IMessageHandler message)
+    {
+        // check files and folders
+        if (!fs.FileExists(args.Main)) { throw new PathNotFoundException($"Unable to find main CSV file {args.Main}"); }
+        if (!fs.DirectoryExists(args.Selection)) { throw new PathNotFoundException($"Unable to find selection folder {args.Selection}"); }
+
+        // read CSV file
+        var content = await csvService.ReadFile(args.Main, false);
+
+        // get list of files
+        var files = fs.FilesGetList(args.Selection, "*.zip");
+        files.AddRange(fs.FilesGetList(args.Selection, "*.7z"));
+
+        List<string> result = [];
+
+        // check if files exist in games list
+        foreach (string f in files)
+        {
+            var nameNoExt = fs.FileNameWithoutExtension(f);
+
+            // don't list bios files
+            if (bioslist.Contains(nameNoExt, StringComparer.InvariantCultureIgnoreCase))
+            {
+                continue;
+            }
+
+            // delete if it's not found in the provided list
+            if (!content.Games.Any(c => c.Name.Equals(nameNoExt, StringComparison.InvariantCultureIgnoreCase)))
+            {
+                result.Add(fs.FileName(f));
+            }
+        }
+
+        return [.. result];
+    }
+
+    private int CopyAdditionalFiles(int total, int i, string game, string ext, RomsAction args, int copied, IMessageHandler messageHandler)
+    {
+        // try to copy additional files for games if it's used and can be found
+        List<string> additionalFiles = [.. biosmatch.GetBiosesForGame(game), .. devicematch.GetDevicesForGame(game)];
+        foreach (var af in additionalFiles)
+        {
+            if (messageHandler.MustCancel) { return copied; }
+
+            var sourceaf = fs.PathJoin(args.Romset, $"{af}.{ext}");
+            var destaf = fs.PathJoin(args.Selection, $"{af}.{ext}");
+            // never overwrite
+            if (fs.FileExists(sourceaf) && !fs.FileExists(destaf))
+            {
+                fs.FileCopy(sourceaf, destaf, false);
+                copied++;
+            }
+        }
+
+        // try to copy chd if it can be found
+        var sourceChd = fs.PathJoin(args.Romset, game);
+        var targetChd = fs.PathJoin(args.Selection, game);
+        if (fs.DirectoryExists(sourceChd))
+        {
+            if (messageHandler.MustCancel) { return copied; }
+
+            messageHandler.Progress($"Copying {game} CHD ({fs.HumanSize(fs.DirectorySize(sourceChd))})", total, i);
+
+            copied += fs.DirectoryCopy(sourceChd, targetChd, args.Overwrite, false);
+        }
+
+        return copied;
     }
 
     private int CopyGamesList(RomsAction args, CsvGamesList content, IMessageHandler messageHandler)
@@ -323,38 +446,6 @@ public class Roms : IRoms
             }
 
             copied = CopyAdditionalFiles(total, i, game, ext, args, copied, messageHandler);
-        }
-
-        return copied;
-    }
-
-    private int CopyAdditionalFiles(int total, int i, string game, string ext, RomsAction args, int copied, IMessageHandler messageHandler) {
-        // try to copy additional files for games if it's used and can be found
-        List<string> additionalFiles = [.. biosmatch.GetBiosesForGame(game), .. devicematch.GetDevicesForGame(game)];
-        foreach (var af in additionalFiles)
-        {
-            if (messageHandler.MustCancel) { return copied; }
-            
-            var sourceaf = fs.PathJoin(args.Romset, $"{af}.{ext}");
-            var destaf = fs.PathJoin(args.Selection, $"{af}.{ext}");
-            // never overwrite
-            if (fs.FileExists(sourceaf) && !fs.FileExists(destaf))
-            {
-                fs.FileCopy(sourceaf, destaf, false);
-                copied++;
-            }
-        }
-
-        // try to copy chd if it can be found
-        var sourceChd = fs.PathJoin(args.Romset, game);
-        var targetChd = fs.PathJoin(args.Selection, game);
-        if (fs.DirectoryExists(sourceChd))
-        {
-            if (messageHandler.MustCancel) { return copied; }
-
-            messageHandler.Progress($"Copying {game} CHD ({fs.HumanSize(fs.DirectorySize(sourceChd))})", total, i);
-
-            copied += fs.DirectoryCopy(sourceChd, targetChd, args.Overwrite, false);
         }
 
         return copied;
@@ -416,8 +507,8 @@ public class Roms : IRoms
     /// <param name="devices">The devices names</param>
     private sealed class DeviceMatch(string game, string[] devices)
     {
-        public string Game { get; set; } = game;
         public string[] Devices { get; set; } = devices;
+        public string Game { get; set; } = game;
     }
 
     /// <summary>

@@ -8,6 +8,7 @@ using ElectronNET.API;
 using ElectronNET.API.Entities;
 using Newtonsoft.Json;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -58,37 +59,6 @@ public partial class ElectronMessageHandler(
     public int TotalSteps { get; set; }
 
     /// <summary>
-    /// Sends a "done" progress message
-    /// </summary>
-    /// <param name="label">The label.</param>
-    /// <param name="folder">The result folder, if any.</param>
-    public void Done(string label, string folder)
-    {
-        // display result
-        if (MustCancel)
-        {
-            Electron.IpcMain.Send(window, ProgressChannel, new Progress { Label = $"Operation cancelled! - {label}", End = true, Cancelled = true });
-        }
-        else
-        {
-            Electron.IpcMain.Send(window, ProgressChannel, new Progress { Label = label, End = true, Folder = folder });
-        }
-
-        MustCancel = false;
-    }
-
-    /// <summary>
-    /// Sends an "error" progress message
-    /// </summary>
-    /// <param name="ex">The exception.</param>
-    public void Error(Exception ex)
-    {
-        Electron.IpcMain.Send(window, ProgressChannel, new Progress { Label = $"An error has occurred: {ex.Message}", End = true });
-
-        MustCancel = false;
-    }
-
-    /// <summary>
     /// Initializes the message handling for the specified window
     /// </summary>
     /// <param name="window">The window.</param>
@@ -126,7 +96,9 @@ public partial class ElectronMessageHandler(
             await Electron.IpcMain.On("roms-check", async (args) => await RomsCheck(args));
             await Electron.IpcMain.On("roms-add", async (args) => await RomsAdd(args));
             await Electron.IpcMain.On("roms-addfromwizard", async (args) => await RomsAddFromWizard(args));
+            await Electron.IpcMain.On("roms-delete-check", async (args) => await RomsDeleteCheck(args));
             await Electron.IpcMain.On("roms-delete", async (args) => await RomsDelete(args));
+            await Electron.IpcMain.On("roms-keep-check", async (args) => await RomsKeepCheck(args));
             await Electron.IpcMain.On("roms-keep", async (args) => await RomsKeep(args));
             await Electron.IpcMain.On("roms-checkdat", async (args) => await RomsCheckDat(args));
 
@@ -152,26 +124,6 @@ public partial class ElectronMessageHandler(
     }
 
     /// <summary>
-    /// Sends an "init" progress message
-    /// </summary>
-    /// <param name="label">The label.</param>
-    public void Init(string label)
-    {
-        MustCancel = false;
-        Electron.IpcMain.Send(window, ProgressChannel, new Progress { Label = label, Init = true });
-    }
-
-    /// <summary>
-    /// Sets the list of successfully processed games
-    /// </summary>
-    /// <param name="game">The processed game</param>
-    public void Processed(GameRom game)
-    {
-        if (game == null) { return; }
-        Electron.IpcMain.Send(window, "progress-processed", Serializer.Serialize(game));
-    }
-
-    /// <summary>
     /// Sends a progression message
     /// </summary>
     /// <param name="label">The label to display</param>
@@ -191,6 +143,57 @@ public partial class ElectronMessageHandler(
         this.TotalItems = total;
         this.CurrentItem = current;
         Electron.IpcMain.Send(window, ProgressChannel, new Progress { Label = label, Total = total, Current = current });
+    }
+
+    /// <summary>
+    /// Sends a "done" progress message
+    /// </summary>
+    /// <param name="label">The label.</param>
+    /// <param name="folder">The result folder, if any.</param>
+    public void ProgressDone(string label, string folder)
+    {
+        // display result
+        if (MustCancel)
+        {
+            Electron.IpcMain.Send(window, ProgressChannel, new Progress { Label = $"Operation cancelled! - {label}", End = true, Cancelled = true });
+        }
+        else
+        {
+            Electron.IpcMain.Send(window, ProgressChannel, new Progress { Label = label, End = true, Folder = folder });
+        }
+
+        MustCancel = false;
+    }
+
+    /// <summary>
+    /// Sends an "error" progress message
+    /// </summary>
+    /// <param name="ex">The exception.</param>
+    public void ProgressError(Exception ex)
+    {
+        Electron.IpcMain.Send(window, ProgressChannel, new Progress { Label = $"An error has occurred: {ex.Message}", End = true });
+
+        MustCancel = false;
+    }
+
+    /// <summary>
+    /// Sends an "init" progress message
+    /// </summary>
+    /// <param name="label">The label.</param>
+    public void ProgressInit(string label)
+    {
+        MustCancel = false;
+        Electron.IpcMain.Send(window, ProgressChannel, new Progress { Label = label, Init = true });
+    }
+
+    /// <summary>
+    /// Sets the list of successfully processed games
+    /// </summary>
+    /// <param name="game">The processed game</param>
+    public void ProgressProcessed(GameRom game)
+    {
+        if (game == null) { return; }
+        Electron.IpcMain.Send(window, "progress-processed", Serializer.Serialize(game));
     }
 
     /// <summary>
@@ -555,9 +558,9 @@ public partial class ElectronMessageHandler(
         await services.DatChecker.CheckDat(data, this);
 
         var settings = environment.SettingsGet();
-        settings.LastRomCsvPath = data.CsvFilter;
+        settings.LastRomCsvPath = string.IsNullOrWhiteSpace(data.CsvFilter) ? settings.LastRomCsvPath : data.CsvFilter;
         settings.LastRomFullsetPath = data.Romset;
-        settings.LastRomTargetPath = data.TargetFolder;
+        settings.LastRomTargetPath = string.IsNullOrWhiteSpace(data.TargetFolder) ? settings.LastRomTargetPath : data.TargetFolder;
         environment.SettingsSave(settings);
     }
 
@@ -579,6 +582,20 @@ public partial class ElectronMessageHandler(
     }
 
     /// <summary>
+    /// Checks the list of roms to be deleted from a folder
+    /// </summary>
+    /// <param name="args">The arguments</param>
+    private async Task RomsDeleteCheck(object args)
+    {
+        var data = ConvertArgs<RomsAction>(args);
+        MustCancel = false;
+
+        var list = await services.Roms.DeleteCheck(data, this);
+
+        Electron.IpcMain.Send(window, "roms-delete-check-reply", new { list });
+    }
+
+    /// <summary>
     /// Keeps roms in a folder
     /// </summary>
     /// <param name="args">The arguments</param>
@@ -593,6 +610,20 @@ public partial class ElectronMessageHandler(
         settings.LastRomCsvPath = data.Main;
         settings.LastRomTargetPath = data.Selection;
         environment.SettingsSave(settings);
+    }
+
+    /// <summary>
+    /// Checks the list of roms that will be removed when running a keep command
+    /// </summary>
+    /// <param name="args">The arguments.</param>
+    private async Task RomsKeepCheck(object args)
+    {
+        var data = ConvertArgs<RomsAction>(args);
+        MustCancel = false;
+
+        var list = await services.Roms.KeepCheck(data, this);
+
+        Electron.IpcMain.Send(window, "roms-keep-check-reply", new { list });
     }
 
     /// <summary>

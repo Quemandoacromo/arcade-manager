@@ -56,28 +56,52 @@
 </p>
 
 @section Scripts {
-    <script>$(() => {
-            getOs((os) => {
-                if (!os) { return; }
-                getAppData((data) => {
-                    if (!data) { return; }
-                    $('#fileRomSelection').attr("placeholder", data.defaults.roms[os][platform]);
+<script>$(() => {
+    getOs((os) => {
+        if (!os) { return; }
+        getAppData((data) => {
+            if (!data) { return; }
+            $('#fileRomSelection').attr("placeholder", data.defaults.roms[os][platform]);
+        });
+    });
+
+    // run action
+    $('#buttonOk').on('click', () => {
+        // get paths from file inputs
+        let main = $('#fileMainCsv').val(),
+            selection = $('#fileRomSelection').val();
+
+        // check every path is filled
+        if (main === '') { window.alert('@Html.Raw(Localizer.Js("ERROR_NOCSV"))'); return; }
+        if (selection === '') { window.alert('@Html.Raw(Localizer.Js("ERROR_NOSELECTION"))'); return; }
+
+        checkRoms(main, selection, () => {
+
+            // get the list of files that will be deleted
+            ipc("roms-keep-check", { main, selection }, (result) => {
+                // display the list of files to confirm deletion
+                $('#filesDeletionModal #filesDeletionList').empty();
+                for (let f of result.list) {
+                    const item = $(`<div class="form-check"><label class="form-check-label"><input class="form-check-input" type="checkbox" value="${f}" checked> ${f}</label></div>`);
+
+                    $('#filesDeletionModal #filesDeletionList').append(item);
+                }
+
+                $('#filesDeletionModal').modal('show');
+
+                // validate
+                $('#filesDeletionModal #filesDeletionContinue').off('click').one('click', () => {
+                    const unchecked = $('#filesDeletionModal #filesDeletionList :checkbox:not(:checked)');
+                    const filter = [];
+                    for (const c of unchecked) {
+                        filter.push(c.value);
+                    }
+
+                    $('#filesDeletionModal').modal('hide');
+                    ipc("roms-keep", { main, selection, filter });
                 });
             });
-
-            // run copy
-            $('#buttonOk').on('click', () => {
-                // get paths from file inputs
-                let main = $('#fileMainCsv').val(),
-                    selection = $('#fileRomSelection').val();
-
-                // check every path is filled
-                if (main === '') { window.alert('@Html.Raw(Localizer.Js("ERROR_NOCSV"))'); return; }
-                if (selection === '') { window.alert('@Html.Raw(Localizer.Js("ERROR_NOSELECTION"))'); return; }
-
-                checkRoms(main, selection, () => {
-                    ipc("roms-keep", { main, selection });
-                });
-            });
-        });</script>
+        });
+    });
+});</script>
 }

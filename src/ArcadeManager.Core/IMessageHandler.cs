@@ -35,19 +35,19 @@ public interface IMessageHandler
     /// </summary>
     /// <param name="label">The label.</param>
     /// <param name="folder">The result folder, if any.</param>
-    void Done(string label, string folder);
+    void ProgressDone(string label, string folder);
 
     /// <summary>
     /// Sends an "error" progress message
     /// </summary>
     /// <param name="ex">The exception.</param>
-    void Error(Exception ex);
+    void ProgressError(Exception ex);
 
     /// <summary>
     /// Sends an "init" progress message
     /// </summary>
     /// <param name="label">The label.</param>
-    void Init(string label);
+    void ProgressInit(string label);
 
     /// <summary>
     /// Sends a progression message
@@ -67,5 +67,5 @@ public interface IMessageHandler
     /// Sends a game processed message
     /// </summary>
     /// <param name="game">The processed game</param>
-    void Processed(GameRom game);
+    void ProgressProcessed(GameRom game);
 }

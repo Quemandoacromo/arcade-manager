@@ -94,6 +94,24 @@
         </div>
     </div>
 
+    <!-- Files list modal -->
+    <div class="modal fade" id="filesDeletionModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    @Localizer["ROMS_FILESTODELETE"]
+                </div>
+                <div class="modal-body">
+                    <div id="filesDeletionList" class="card p-3" style="max-height: 300px; overflow: auto;"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-danger" data-dismiss="modal">@Localizer["CANCEL"]</button>
+                    <button type="button" id="filesDeletionContinue" class="btn btn-outline-success">@Localizer["CONTINUE"]</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Fixes jQuery integration https://stackoverflow.com/a/37480521/6776 -->
     <script>if (typeof module === 'object') { window.module = module; module = undefined; }</script>
     <script type="text/javascript" src="/js/jquery.min.js"></script>
