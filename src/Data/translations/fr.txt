@@ -270,3 +270,4 @@ ROMS_CHECKDAT_ADDFOLDER_DESC="(Optionnel) Un autre dossier dans lequel recherche
 ROMS_CHECKDAT_FIXFOLDER="Dossier cible"
 ROMS_CHECKDAT_FIXFOLDER_DESC="Le dossier dans lequel le romset sera recréé"
 ROMS_CHECKDAT_CHECK="Vérifier"
+HOME_HOMEPAGE="Page du project"
