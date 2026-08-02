@@ -60,11 +60,7 @@ public static class Program
         await builder
             .ConfigureWebHostDefaults(webBuilder =>
             {
-                webBuilder.UseElectron(args, async () =>
-                {
-                    BrowserWindow mainWindow = await StartupElectron.CreateMainWindow();
-                    await StartupElectron.ElectronBootstrap(mainWindow);
-                });
+                webBuilder.UseElectron(args, StartupElectron.CreateMainWindow);
                 webBuilder.UseStartup<Startup>();
             })
             .Build()

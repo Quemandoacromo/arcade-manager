@@ -1,5 +1,6 @@
 using ElectronNET.API;
 using ElectronNET.API.Entities;
+using System;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
@@ -8,52 +9,38 @@ namespace ArcadeManager;
 
 public static class StartupElectron
 {
+    private static BrowserWindow browserWindow;
+
     /// <summary>
     /// Creates the main browser window
     /// </summary>
     /// <returns>The main browser window</returns>
-    public static async Task<BrowserWindow> CreateMainWindow()
+    public static async Task CreateMainWindow()
     {
-        var browserWindow = await Electron.WindowManager.CreateWindowAsync(new BrowserWindowOptions
+        if (browserWindow == null)
         {
-            Width = 1280,
-            Height = 800,
-            Show = true,
-            Resizable = true
-        });
-
-        await browserWindow.WebContents.Session.ClearCacheAsync();
-
-        browserWindow.OnReadyToShow += () => browserWindow.Show();
-        browserWindow.SetTitle("Arcade Manager");
-
-        return browserWindow;
-    }
-
-    /// <summary>
-    /// Initializes the Electron app
-    /// </summary>
-    public static async Task ElectronBootstrap(BrowserWindow mainWindow)
-    {
-        BuildAppMenu();
-
-        // re-create main window if last window has been closed
-        await Electron.App.On("activate", async obj =>
-        {
-            var hasWindows = (bool)obj;
-
-            if (!hasWindows)
+            browserWindow = await Electron.WindowManager.CreateWindowAsync(new BrowserWindowOptions
             {
-                mainWindow = await CreateMainWindow();
-            }
-            else
-            {
-                mainWindow?.Show();
-            }
+                Width = 1280,
+                Height = 800,
+                Show = true,
+                Resizable = true
+            });
+
+            await browserWindow.WebContents.Session.ClearCacheAsync();
+
+            browserWindow.OnReadyToShow += () => browserWindow.Show();
+            browserWindow.SetTitle("Arcade Manager");
+
+            BuildAppMenu();
 
             // initializes RPC message handling
-            Program.GetMessageHandler(null)?.Handle(mainWindow);
-        });
+            Program.GetMessageHandler(null)?.Handle(browserWindow);
+        }
+        else
+        {
+            browserWindow.Show();
+        }
     }
 
     /// <summary>
