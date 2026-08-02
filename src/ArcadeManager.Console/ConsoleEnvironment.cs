@@ -36,6 +36,12 @@ public class ConsoleEnvironment : IEnvironment
         return string.Empty;
     }
 
+    public UserSettings SettingsGet()
+    {
+        // unused in console mode
+        return new UserSettings();
+    }
+
     public void SettingsIgnoredVersionAdd(string version)
     {
         // do nothing as the console version doesn't check for update
@@ -45,5 +51,10 @@ public class ConsoleEnvironment : IEnvironment
     {
         // do nothing as the console version doesn't check for update
         return false;
+    }
+
+    public void SettingsSave(UserSettings settings)
+    {
+        // unused in console mode
     }
 }
