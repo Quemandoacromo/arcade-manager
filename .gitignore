@@ -1,3 +1,5 @@
+*.lic
+
 # Mac
 .DS_Store
 
