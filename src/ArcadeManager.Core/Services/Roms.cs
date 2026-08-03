@@ -3,6 +3,10 @@ using ArcadeManager.Core.Exceptions;
 using ArcadeManager.Core.Infrastructure.Interfaces;
 using ArcadeManager.Core.Models;
 using ArcadeManager.Core.Services.Interfaces;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace ArcadeManager.Core.Services;
 
@@ -273,7 +277,7 @@ public class Roms : IRoms
             var content = await csvService.ReadFile(args.Main, false);
 
             // get list of files
-            var files = fs.FilesGetList(args.Selection, "*.zip");
+            var files = fs.FilesGetList(args.Selection, "*.zip").ToList();
             files.AddRange(fs.FilesGetList(args.Selection, "*.7z"));
 
             var total = content.Games.Count;
@@ -338,7 +342,7 @@ public class Roms : IRoms
         var content = await csvService.ReadFile(args.Main, false);
 
         // get list of files
-        var files = fs.FilesGetList(args.Selection, "*.zip");
+        var files = fs.FilesGetList(args.Selection, "*.zip").ToList();
         files.AddRange(fs.FilesGetList(args.Selection, "*.7z"));
 
         List<string> result = [];

@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Text.Json.Serialization;
 using System.Xml.Linq;
 
@@ -141,9 +142,8 @@ public class GameRom
     /// Creates a new game rom info from an XML node from the DAT
     /// </summary>
     /// <param name="gameXml">The game XML infos from the DAT</param>
-    /// <param name="folder">The game folder</param>
     /// <returns>The game rom infos</returns>
-    public static GameRom FromXml(XElement gameXml, string folder)
+    public static GameRom FromXml(XElement gameXml)
     {
         var game = new GameRom
         {

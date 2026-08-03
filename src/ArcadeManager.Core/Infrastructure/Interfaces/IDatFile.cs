@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using ArcadeManager.Core.Models.Roms;
 
 namespace ArcadeManager.Core.Infrastructure.Interfaces;

@@ -22,7 +22,7 @@ public class GameRomsTests
     public void GameRom_is_created_from_xml()
     {
         // arrange/act
-        var game = GameRom.FromXml(xml, "romset");
+        var game = GameRom.FromXml(xml);
     
         // assert: rom
         game.Name.Should().Be("test1");
@@ -42,7 +42,7 @@ public class GameRomsTests
     public void GameRom_is_marked_as_error_missing_rom()
     {
         // arrange
-        var game = GameRom.FromXml(xml, "romset");
+        var game = GameRom.FromXml(xml);
 
         // act
         game.Error(ErrorReason.MissingFile, "Missing whole rom", null);
@@ -56,7 +56,7 @@ public class GameRomsTests
     public void GameRom_is_marked_as_error_missing_bios()
     {
         // arrange
-        var game = GameRom.FromXml(xml, "romset");
+        var game = GameRom.FromXml(xml);
 
         // arrange: fake bios (should be filled with Infrastructure.DatFile.GetRoms)
         game.Bios = new() { Name = "bios.zip" };
@@ -74,7 +74,7 @@ public class GameRomsTests
     public void GameRom_is_marked_as_error_missing_file_in_zip()
     {
         // arrange
-        var game = GameRom.FromXml(xml, "romset");
+        var game = GameRom.FromXml(xml);
 
         // act
         game.Error(ErrorReason.MissingFile, "Missing file", "s92u-23a");
@@ -89,7 +89,7 @@ public class GameRomsTests
     public void GameRom_is_marked_as_error_bad_hash()
     {
         // arrange
-        var game = GameRom.FromXml(xml, "romset");
+        var game = GameRom.FromXml(xml);
 
         // act
         game.Error(ErrorReason.BadHash, "Bad hash", "s92u-23a");

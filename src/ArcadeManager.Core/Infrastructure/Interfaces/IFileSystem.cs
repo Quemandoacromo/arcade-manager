@@ -1,28 +1,30 @@
-﻿using System;
+﻿using ArcadeManager.Core.Models.Roms;
+using ArcadeManager.Core.Models.Zip;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using ArcadeManager.Core.Models.Roms;
-using ArcadeManager.Core.Models.Zip;
 
 namespace ArcadeManager.Core.Infrastructure.Interfaces;
 
 /// <summary>
 /// Interface for file system access
 /// </summary>
-public interface IFileSystem {
+public interface IFileSystem
+{
+    /// <summary>
+    /// Compresses the content of the folder.
+    /// </summary>
+    /// <param name="targetFolder">The target folder to compress.</param>
+    /// <param name="targetZip">The target zip to compress into.</param>
+    void CompressFolderContent(string targetFolder, string targetZip);
 
     /// <summary>
-    /// Creates the specified directory.
+    /// Deletes a file in a zip
     /// </summary>
-    /// <param name="path">The path.</param>
-    void DirectoryCreate(string path);
-
-    /// <summary>
-    /// Removes all files in the specified directory
-    /// </summary>
-    /// <param name="path">The path to the directory</param>
-    void DirectoryEmpty(string path);
+    /// <param name="zip">The zip file</param>
+    /// <param name="file">A file to delete</param>
+    void DeleteZipFile(ZipFile zip, IGameRomFile file);
 
     /// <summary>
     /// Copies a directory
@@ -35,6 +37,31 @@ public interface IFileSystem {
     /// Source directory does not exist or could not be found
     /// </exception>
     int DirectoryCopy(string sourceDirName, string destDirName, bool overwrite, bool copySubDirs);
+
+    /// <summary>
+    /// Creates the specified directory.
+    /// </summary>
+    /// <param name="path">The path.</param>
+    void DirectoryCreate(string path);
+
+    /// <summary>
+    /// Deletes the specified directory
+    /// </summary>
+    /// <param name="path">The path of the directory to delete.</param>
+    /// <param name="recursive">if set to <c>true</c> the action is recursive.</param>
+    void DirectoryDelete(string path, bool recursive);
+
+    /// <summary>
+    /// Removes all files in the specified directory
+    /// </summary>
+    /// <param name="path">The path to the directory</param>
+    void DirectoryEmpty(string path);
+
+    /// <summary>
+    /// Makes sure that a folder exists
+    /// </summary>
+    /// <param name="targetFolder">The target folder.</param>
+    void DirectoryEnsure(string targetFolder);
 
     /// <summary>
     /// Checks if a directory exists
@@ -58,12 +85,6 @@ public interface IFileSystem {
     long DirectorySize(string directory);
 
     /// <summary>
-    /// Makes sure that a folder exists
-    /// </summary>
-    /// <param name="targetFolder">The target folder.</param>
-    void DirectoryEnsure(string targetFolder);
-
-    /// <summary>
     /// Checks if a path exists
     /// </summary>
     /// <param name="path">The path to check</param>
@@ -85,13 +106,6 @@ public interface IFileSystem {
     void FileDelete(string filePath);
 
     /// <summary>
-    /// Moves a file to a folder
-    /// </summary>
-    /// <param name="filePath">The path to the file</param>
-    /// <param name="toFolder">The path to the folder to move it to</param>
-    void FileMove(string filePath, string toFolder);
-
-    /// <summary>
     /// Checks if a file exists
     /// </summary>
     /// <param name="path">The file path.</param>
@@ -104,6 +118,13 @@ public interface IFileSystem {
     /// <param name="path">The path.</param>
     /// <returns>The file extension</returns>
     string FileExtension(string path);
+
+    /// <summary>
+    /// Moves a file to a folder
+    /// </summary>
+    /// <param name="filePath">The path to the file</param>
+    /// <param name="toFolder">The path to the folder to move it to</param>
+    void FileMove(string filePath, string toFolder);
 
     /// <summary>
     /// Gets a file name
@@ -134,6 +155,21 @@ public interface IFileSystem {
     Task<string> FileReadAsync(string path);
 
     /// <summary>
+    /// Reads a binary file content asynchronously
+    /// </summary>
+    /// <param name="path">The path.</param>
+    /// <returns>The binary file content</returns>
+    Task<byte[]> FileReadBinaryAsync(string path);
+
+    /// <summary>
+    /// Gets the files in a directory.
+    /// </summary>
+    /// <param name="path">The directory path.</param>
+    /// <param name="pattern">The file matching pattern.</param>
+    /// <returns>The list of files</returns>
+    IEnumerable<string> FilesGetList(string path, string pattern);
+
+    /// <summary>
     /// Gets the file size
     /// </summary>
     /// <param name="path">The path.</param>
@@ -148,6 +184,20 @@ public interface IFileSystem {
     Task FileWriteAsync(string path, string content);
 
     /// <summary>
+    /// Writes a binary file content asynchronously
+    /// </summary>
+    /// <param name="path">The path.</param>
+    /// <param name="content">The binary content.</param>
+    Task FileWriteBinaryAsync(string path, byte[] content);
+
+    /// <summary>
+    /// Searches for a file in a zip in a case-insensitive way, and returns the actual file name
+    /// </summary>
+    /// <param name="fileName">The file name to search</param>
+    /// <returns>The proper file name, case sensitiv-ed</returns>
+    string FindFileInZip(ZipFile archive, string fileName);
+
+    /// <summary>
     /// Gets the path to a file or folder in the Data folder.
     /// </summary>
     /// <param name="paths">The paths parts.</param>
@@ -155,18 +205,28 @@ public interface IFileSystem {
     string GetDataPath(params string[] paths);
 
     /// <summary>
-    /// Gets the files in a directory.
-    /// </summary>
-    /// <param name="path">The directory path.</param>
-    /// <param name="pattern">The file matching pattern.</param>
-    /// <returns>The list of files</returns>
-    List<string> FilesGetList(string path, string pattern);
-
-    /// <summary>
     /// Gets the invalid file name characters.
     /// </summary>
     /// <returns>The invalid file name characters</returns>
     char[] GetInvalidFileNameChars();
+
+    /// <summary>
+    /// Lists the files inside a zip
+    /// </summary>
+    /// <param name="zip">The zip archive</param>
+    /// <param name="fileName">The file name of the zip</param>
+    /// <param name="folder">The folder of the zip</param>
+    /// <param name="getSha1">Whether to get the SHA1 hash of the file</param>
+    /// <returns>The zip file infos</returns>
+    List<GameRomFile> GetZipFiles(ZipFile zip, string fileName, string folder, bool getSha1);
+
+    /// <summary>
+    /// Lists the files inside a zip
+    /// </summary>
+    /// <param name="path">The path to the zip file</param>
+    /// <param name="getSha1">Whether to get the SHA1 hash of the file</param>
+    /// <returns>The zip file infos</returns>
+    List<GameRomFile> GetZipFiles(string path, bool getSha1);
 
     /// <summary>
     /// Makes a file size human-readable
@@ -181,6 +241,20 @@ public interface IFileSystem {
     /// <param name="path">The path to check</param>
     /// <returns>true if the path is a directory ; otherwise, false</returns>
     bool IsDirectory(string path);
+
+    /// <summary>
+    /// Opens a zip in read mode
+    /// </summary>
+    /// <param name="path">The path of the zip to open</param>
+    /// <returns>The zip archive data</returns>
+    ZipFile OpenZipRead(string path);
+
+    /// <summary>
+    /// Opens a zip in write mode (create or update)
+    /// </summary>
+    /// <param name="path">The path of the zip to open</param>
+    /// <returns>The zip archive data</returns>
+    ZipFile OpenZipWrite(string path);
 
     /// <summary>
     /// Joins paths
@@ -204,45 +278,6 @@ public interface IFileSystem {
     Task ReadFileStream(string path, Func<StreamReader, Task> action);
 
     /// <summary>
-    /// Writes in a file using a stream.
-    /// </summary>
-    /// <param name="path">The file path.</param>
-    /// <param name="action">The action to execute on the stream writer.</param>
-    Task WriteFileStream(string path, Func<StreamWriter, Task> action);
-
-    /// <summary>
-    /// Lists the files inside a zip
-    /// </summary>
-    /// <param name="zip">The zip archive</param>
-    /// <param name="fileName">The file name of the zip</param>
-    /// <param name="folder">The folder of the zip</param>
-    /// <param name="getSha1">Whether to get the SHA1 hash of the file</param>
-    /// <returns>The zip file infos</returns>
-    List<GameRomFile> GetZipFiles(ZipFile zip, string fileName, string folder, bool getSha1);
-
-    /// <summary>
-    /// Lists the files inside a zip
-    /// </summary>
-    /// <param name="path">The path to the zip file</param>
-    /// <param name="getSha1">Whether to get the SHA1 hash of the file</param>
-    /// <returns>The zip file infos</returns>
-    List<GameRomFile> GetZipFiles(string path, bool getSha1);
-
-    /// <summary>
-    /// Opens a zip in read mode
-    /// </summary>
-    /// <param name="path">The path of the zip to open</param>
-    /// <returns>The zip archive data</returns>
-    ZipFile OpenZipRead(string path);
-
-    /// <summary>
-    /// Opens a zip in write mode (create or update)
-    /// </summary>
-    /// <param name="path">The path of the zip to open</param>
-    /// <returns>The zip archive data</returns>
-    ZipFile OpenZipWrite(string path);
-
-    /// <summary>
     /// Replaces a file in a zip with another file
     /// </summary>
     /// <param name="source">The source zip to read the file from</param>
@@ -253,9 +288,9 @@ public interface IFileSystem {
     Task<bool> ReplaceZipFile(ZipFile source, ZipFile target, IGameRomFile sourceFile, IGameRomFile targetFile);
 
     /// <summary>
-    /// Deletes a file in a zip
+    /// Writes in a file using a stream.
     /// </summary>
-    /// <param name="zip">The zip file</param>
-    /// <param name="file">A file to delete</param>
-    void DeleteZipFile(ZipFile zip, IGameRomFile file);
+    /// <param name="path">The file path.</param>
+    /// <param name="action">The action to execute on the stream writer.</param>
+    Task WriteFileStream(string path, Func<StreamWriter, Task> action);
 }

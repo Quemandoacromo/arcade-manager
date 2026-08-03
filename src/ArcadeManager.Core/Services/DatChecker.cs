@@ -1,5 +1,8 @@
 using System;
-using ArcadeManager.Core;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 using ArcadeManager.Core.Actions;
 using ArcadeManager.Core.Infrastructure.Interfaces;
 using ArcadeManager.Core.Models;
@@ -59,7 +62,7 @@ public class DatChecker(IFileSystem fs, ICsv csvService, IDatFile datFile) : IDa
 
             // get the list of files in the repair folder
             List<string> otherFiles = GetOtherFolderFiles(args, messageHandler);
-            int total = ComputeTotal(filesInRomset.Count, args.ChangeType, otherFiles.Count);
+            int total = ComputeTotal(filesInRomset.Count(), args.ChangeType, otherFiles.Count);
 
             messageHandler.TotalItems = total;
 

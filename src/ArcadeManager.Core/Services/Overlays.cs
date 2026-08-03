@@ -159,7 +159,7 @@ public class Overlays(IDownloader downloaderService, IFileSystem fs, IEnvironmen
     }
 
     private async Task<string> GetOverlayConfigContent(Actions.OverlaysAction data, OverlayBundle pack, string overlayConfigDest, string overlayFileName, IMessageHandler messageHandler) {
-        var overlayConfigContent = string.Empty;
+        string overlayConfigContent;
         if (data.Overwrite || !fs.FileExists(overlayConfigDest)) {
             if (messageHandler.MustCancel) { throw cancel; }
 
@@ -289,13 +289,13 @@ public class Overlays(IDownloader downloaderService, IFileSystem fs, IEnvironmen
     /// <param name="romFolders">The rom folders.</param>
     /// <param name="entries">The available entries.</param>
     /// <returns>The roms to process</returns>
-    private IEnumerable<RomToProcess> GetRomsToProcess(string[] romFolders, IEnumerable<GithubTree.Entry> entries) {
+    private List<RomToProcess> GetRomsToProcess(string[] romFolders, IEnumerable<GithubTree.Entry> entries) {
         var result = new List<RomToProcess>();
 
         // list all the folders (arcade, fba, mame...)
         foreach (var folder in romFolders) {
             // get all rom files
-            var files = fs.FilesGetList(folder, "*.zip");
+            var files = fs.FilesGetList(folder, "*.zip").ToList();
             files.AddRange(fs.FilesGetList(folder, "*.7z"));
             foreach (var fi in files) {
                 var game = fs.FileNameWithoutExtension(fi);

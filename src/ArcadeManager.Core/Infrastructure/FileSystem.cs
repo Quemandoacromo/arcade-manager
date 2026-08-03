@@ -1,14 +1,11 @@
-﻿using System;
+﻿using ArcadeManager.Core.Infrastructure.Interfaces;
+using ArcadeManager.Core.Models.Roms;
+using ArcadeManager.Core.Models.Zip;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
 using System.Threading.Tasks;
-using ArcadeManager.Core;
-using ArcadeManager.Core.Infrastructure.Interfaces;
-using ArcadeManager.Core.Models.Roms;
-using ArcadeManager.Core.Models.Zip;
 
 namespace ArcadeManager.Core.Infrastructure;
 
@@ -17,32 +14,27 @@ namespace ArcadeManager.Core.Infrastructure;
 /// </summary>
 public class FileSystem(IEnvironment environment) : IFileSystem
 {
-
     /// <summary>
-    /// Creates the specified directory.
+    /// Compresses the content of the folder.
     /// </summary>
-    /// <param name="path">The path.</param>
-    public void DirectoryCreate(string path)
+    /// <param name="targetFolder">The target folder to compress.</param>
+    /// <param name="targetZip">The target zip to compress into.</param>
+    public void CompressFolderContent(string targetFolder, string targetZip)
     {
-        Directory.CreateDirectory(path);
+        System.IO.Compression.ZipFile.CreateFromDirectory(targetFolder, targetZip);
     }
 
     /// <summary>
-    /// Removes all files in the specified directory
+    /// Deletes a file in a zip
     /// </summary>
-    /// <param name="path">The path to the directory</param>
-    public void DirectoryEmpty(string path) {
-        if (!DirectoryExists(path)) { return; }
+    /// <param name="zip">The zip file</param>
+    /// <param name="file">A file to delete</param>
+    public void DeleteZipFile(ZipFile zip, IGameRomFile file)
+    {
+        if (zip.Mode != ZipFileMode.Update) { return; }
 
-        DirectoryInfo di = new(path);
-        foreach (FileInfo file in di.EnumerateFiles())
-        {
-            file.Delete(); 
-        }
-        foreach (DirectoryInfo dir in di.EnumerateDirectories())
-        {
-            dir.Delete(true); 
-        }
+        var entry = zip.GetEntry(string.IsNullOrEmpty(file.Path) ? file.Name : $"{file.Path}/{file.Name}");
+        entry?.Delete();
     }
 
     /// <summary>
@@ -104,6 +96,61 @@ public class FileSystem(IEnvironment environment) : IFileSystem
     }
 
     /// <summary>
+    /// Creates the specified directory.
+    /// </summary>
+    /// <param name="path">The path.</param>
+    public void DirectoryCreate(string path)
+    {
+        Directory.CreateDirectory(path);
+    }
+
+    /// <summary>
+    /// Deletes the specified directory
+    /// </summary>
+    /// <param name="path">The path of the directory to delete.</param>
+    /// <param name="recursive">if set to <c>true</c> the action is recursive.</param>
+    public void DirectoryDelete(string path, bool recursive)
+    {
+        Directory.Delete(path, recursive);
+    }
+
+    /// <summary>
+    /// Removes all files in the specified directory
+    /// </summary>
+    /// <param name="path">The path to the directory</param>
+    public void DirectoryEmpty(string path)
+    {
+        if (!DirectoryExists(path)) { return; }
+
+        DirectoryInfo di = new(path);
+        foreach (FileInfo file in di.EnumerateFiles())
+        {
+            file.Delete();
+        }
+        foreach (DirectoryInfo dir in di.EnumerateDirectories())
+        {
+            dir.Delete(true);
+        }
+    }
+
+    /// <summary>
+    /// Makes sure that a folder exists
+    /// </summary>
+    /// <param name="targetFolder">The target folder.</param>
+    public void DirectoryEnsure(string targetFolder)
+    {
+        if (string.IsNullOrEmpty(targetFolder))
+        {
+            return;
+        }
+
+        if (!Directory.Exists(targetFolder))
+        {
+            Directory.CreateDirectory(targetFolder);
+        }
+    }
+
+    /// <summary>
     /// Checks if a directory exists
     /// </summary>
     /// <param name="path">The directory path.</param>
@@ -152,22 +199,6 @@ public class FileSystem(IEnvironment environment) : IFileSystem
     }
 
     /// <summary>
-    /// Makes sure that a folder exists
-    /// </summary>
-    /// <param name="targetFolder">The target folder.</param>
-    public void DirectoryEnsure(string targetFolder)
-    {
-        if (string.IsNullOrEmpty(targetFolder)) {
-            return;
-        }
-        
-        if (!Directory.Exists(targetFolder))
-        {
-            Directory.CreateDirectory(targetFolder);
-        }
-    }
-
-    /// <summary>
     /// Checks if a path exists
     /// </summary>
     /// <param name="path">The path to check</param>
@@ -208,15 +239,6 @@ public class FileSystem(IEnvironment environment) : IFileSystem
     }
 
     /// <summary>
-    /// Moves a file to a folder
-    /// </summary>
-    /// <param name="filePath">The path to the file</param>
-    /// <param name="toFolder">The path to the folder to move it to</param>
-    public void FileMove(string filePath, string toFolder) {
-        File.Move(filePath, PathJoin(toFolder, FileName(filePath)));
-    }
-
-    /// <summary>
     /// Checks if a file exists
     /// </summary>
     /// <param name="path">The file path.</param>
@@ -234,6 +256,16 @@ public class FileSystem(IEnvironment environment) : IFileSystem
     public string FileExtension(string path)
     {
         return new FileInfo(path).Extension;
+    }
+
+    /// <summary>
+    /// Moves a file to a folder
+    /// </summary>
+    /// <param name="filePath">The path to the file</param>
+    /// <param name="toFolder">The path to the folder to move it to</param>
+    public void FileMove(string filePath, string toFolder)
+    {
+        File.Move(filePath, PathJoin(toFolder, FileName(filePath)));
     }
 
     /// <summary>
@@ -279,6 +311,29 @@ public class FileSystem(IEnvironment environment) : IFileSystem
     }
 
     /// <summary>
+    /// Reads a binary file content asynchronously
+    /// </summary>
+    /// <param name="path">The path.</param>
+    /// <returns>
+    /// The binary file content
+    /// </returns>
+    public async Task<byte[]> FileReadBinaryAsync(string path)
+    {
+        return await File.ReadAllBytesAsync(path);
+    }
+
+    /// <summary>
+    /// Gets the files in a directory.
+    /// </summary>
+    /// <param name="path">The directory path.</param>
+    /// <param name="pattern">The file matching pattern.</param>
+    /// <returns>The list of files</returns>
+    public IEnumerable<string> FilesGetList(string path, string pattern)
+    {
+        return Directory.EnumerateFiles(path, pattern, new EnumerationOptions { MatchCasing = MatchCasing.CaseInsensitive });
+    }
+
+    /// <summary>
     /// Gets the file size
     /// </summary>
     /// <param name="path">The path.</param>
@@ -300,25 +355,44 @@ public class FileSystem(IEnvironment environment) : IFileSystem
     }
 
     /// <summary>
+    /// Writes a binary file content asynchronously
+    /// </summary>
+    /// <param name="path">The path.</param>
+    /// <param name="content">The binary content.</param>
+    public async Task FileWriteBinaryAsync(string path, byte[] content)
+    {
+        await File.WriteAllBytesAsync(path, content);
+    }
+
+    /// <summary>
+    /// Searches for a file in a case-insensitive way, and returns the actual file name
+    /// </summary>
+    /// <param name="archive"></param>
+    /// <param name="fileName">The file name to search</param>
+    /// <returns>
+    /// The proper file name, case sensitiv-ed
+    /// </returns>
+    /// <exception cref="FileNotFoundException">Unable to find file {fileName} in archive</exception>
+    public string FindFileInZip(ZipFile archive, string fileName)
+    {
+        var found = archive.Entries.FirstOrDefault(e => e.Name.Equals(fileName, StringComparison.InvariantCultureIgnoreCase));
+        if (found != null)
+        {
+            return found.Name;
+        }
+
+        throw new FileNotFoundException($"Unable to find file {fileName} in archive");
+    }
+
+    /// <summary>
     /// Gets the path to a file or folder in the Data folder.
     /// </summary>
     /// <param name="paths">The paths parts.</param>
     /// <returns>The path to the file or folder</returns>
     public string GetDataPath(params string[] paths)
     {
-        paths = (new string[] { environment.GetBasePath(), "Data" }).Concat(paths).ToArray();
+        paths = [.. (new string[] { environment.GetBasePath(), "Data" }), .. paths];
         return Path.Combine(paths);
-    }
-
-    /// <summary>
-    /// Gets the files in a directory.
-    /// </summary>
-    /// <param name="path">The directory path.</param>
-    /// <param name="pattern">The file matching pattern.</param>
-    /// <returns>The list of files</returns>
-    public List<string> FilesGetList(string path, string pattern)
-    {
-        return Directory.GetFiles(path, pattern, new EnumerationOptions { MatchCasing = MatchCasing.CaseInsensitive }).ToList();
     }
 
     /// <summary>
@@ -328,6 +402,49 @@ public class FileSystem(IEnvironment environment) : IFileSystem
     public char[] GetInvalidFileNameChars()
     {
         return Path.GetInvalidFileNameChars();
+    }
+
+    /// <summary>
+    /// Lists the files inside a zip
+    /// </summary>
+    /// <param name="zip">The zip archive</param>
+    /// <param name="fileName">The file name of the zip</param>
+    /// <param name="folder">The folder of the zip</param>
+    /// <param name="getSha1">Whether to get the SHA1 hash of the file</param>
+    /// <returns>The zip file infos</returns>
+    public List<GameRomFile> GetZipFiles(ZipFile zip, string fileName, string folder, bool getSha1)
+    {
+        var result = new List<GameRomFile>();
+
+        // loop on entry, skipping folders (which are entries with no short name)
+        foreach (var entry in zip.Entries.Where(e => !string.IsNullOrEmpty(e.Name)))
+        {
+            result.Add(new GameRomFile
+            {
+                Name = entry.Name,
+                Path = Path.GetDirectoryName(entry.FullName),
+                Size = zip.Mode == ZipFileMode.Read ? entry.Length : 0,
+                Crc = entry.Crc,
+                Sha1 = getSha1 ? entry.GetSha1() : null
+            });
+        }
+
+        return result;
+    }
+
+    /// <summary>
+    /// Lists the files inside a zip
+    /// </summary>
+    /// <param name="path">The path to the zip file</param>
+    /// <param name="getSha1">Whether to get the SHA1 hash of the file</param>
+    /// <returns>The zip file infos</returns>
+    public List<GameRomFile> GetZipFiles(string path, bool getSha1)
+    {
+        var fileName = FileName(path);
+        var folder = DirectoryName(path);
+
+        using var zip = OpenZipRead(path);
+        return GetZipFiles(zip, fileName, folder, getSha1);
     }
 
     /// <summary>
@@ -370,6 +487,27 @@ public class FileSystem(IEnvironment environment) : IFileSystem
     }
 
     /// <summary>
+    /// Opens a zip in read mode
+    /// </summary>
+    /// <param name="path">The path of the zip to open</param>
+    /// <returns>The zip archive data</returns>
+    public ZipFile OpenZipRead(string path)
+    {
+        return ZipFile.Open(path, ZipFileMode.Read);
+    }
+
+    /// <summary>
+    /// Opens a zip for writing
+    /// </summary>
+    /// <param name="path">The path to the zip</param>
+    /// <returns>The opened zip file</returns>
+    public ZipFile OpenZipWrite(string path)
+    {
+        var mode = FileExists(path) ? ZipFileMode.Update : ZipFileMode.Create;
+        return ZipFile.Open(path, mode);
+    }
+
+    /// <summary>
     /// Joins paths
     /// </summary>
     /// <param name="paths">The paths parts to join.</param>
@@ -402,6 +540,46 @@ public class FileSystem(IEnvironment environment) : IFileSystem
     }
 
     /// <summary>
+    /// Replaces a file in a zip with another file
+    /// </summary>
+    /// <param name="source">The source zip to read the file from</param>
+    /// <param name="target">The target zip to write to</param>
+    /// <param name="sourceFile">The file to read</param>
+    /// <param name="targetFile">The file to write</param>
+    /// <returns>A value indicating whether the file has been replaced</returns>
+    public async Task<bool> ReplaceZipFile(ZipFile source, ZipFile target, IGameRomFile sourceFile, IGameRomFile targetFile)
+    {
+        if (target.Mode == ZipFileMode.Read)
+        {
+            throw new ArgumentException("Zip archive is opened in read mode");
+        }
+
+        // get the source entry
+        var entryPath = string.IsNullOrEmpty(sourceFile.Path) ? sourceFile.Name : $"{sourceFile.Path}/{sourceFile.Name}";
+        var sourceEntry = source.Entries.FirstOrDefault(e => e.FullName == entryPath);
+        if (sourceEntry == null)
+        {
+            // maybe I should throw, but I have very bad exception management
+            return false;
+        }
+
+        if (target.Mode == ZipFileMode.Update)
+        {
+            target.GetEntry(sourceFile.Name)?.Delete();
+        }
+
+        var targetEntry = target.CreateEntry(targetFile.Name);
+
+        // write content
+        using var targetStream = await targetEntry.OpenAsync();
+        using var sourceStream = await sourceEntry.OpenAsync();
+
+        await sourceStream.CopyToAsync(targetStream);
+
+        return true;
+    }
+
+    /// <summary>
     /// Writes in a file using a stream.
     /// </summary>
     /// <param name="path">The file path.</param>
@@ -412,114 +590,5 @@ public class FileSystem(IEnvironment environment) : IFileSystem
         using var outStreamWriter = new StreamWriter(outStream);
 
         await action(outStreamWriter);
-    }
-
-    /// <summary>
-    /// Lists the files inside a zip
-    /// </summary>
-    /// <param name="zip">The zip archive</param>
-    /// <param name="fileName">The file name of the zip</param>
-    /// <param name="folder">The folder of the zip</param>
-    /// <param name="getSha1">Whether to get the SHA1 hash of the file</param>
-    /// <returns>The zip file infos</returns>
-    public List<GameRomFile> GetZipFiles(ZipFile zip, string fileName, string folder, bool getSha1) {
-        var result = new List<GameRomFile>();
-
-        // loop on entry, skipping folders (which are entries with no short name)
-        foreach (var entry in zip.Entries.Where(e => !string.IsNullOrEmpty(e.Name)))
-        {
-            result.Add(new GameRomFile
-            {
-                Name = entry.Name,
-                Path = Path.GetDirectoryName(entry.FullName),
-                Size = zip.Mode == ZipFileMode.Read ? entry.Length : 0,
-                Crc = entry.Crc,
-                Sha1 = getSha1 ? entry.GetSha1() : null
-            });
-        }
-
-        return result;
-    }
-
-    /// <summary>
-    /// Lists the files inside a zip
-    /// </summary>
-    /// <param name="path">The path to the zip file</param>
-    /// <param name="getSha1">Whether to get the SHA1 hash of the file</param>
-    /// <returns>The zip file infos</returns>
-    public List<GameRomFile> GetZipFiles(string path, bool getSha1)
-    {
-        var fileName = FileName(path);
-        var folder = DirectoryName(path);
-
-        using var zip = OpenZipRead(path);
-        return GetZipFiles(zip, fileName, folder, getSha1);
-    }
-
-    /// <summary>
-    /// Opens a zip in read mode
-    /// </summary>
-    /// <param name="path">The path of the zip to open</param>
-    /// <returns>The zip archive data</returns>
-    public ZipFile OpenZipRead(string path) {
-        return ZipFile.Open(path, ZipFileMode.Read);
-    }
-
-    /// <summary>
-    /// Opens a zip for writing
-    /// </summary>
-    /// <param name="path">The path to the zip</param>
-    /// <returns>The opened zip file</returns>
-    public ZipFile OpenZipWrite(string path) {
-        var mode = FileExists(path) ? ZipFileMode.Update : ZipFileMode.Create;
-        return ZipFile.Open(path, mode);
-    }
-
-    /// <summary>
-    /// Replaces a file in a zip with another file
-    /// </summary>
-    /// <param name="source">The source zip to read the file from</param>
-    /// <param name="target">The target zip to write to</param>
-    /// <param name="sourceFile">The file to read</param>
-    /// <param name="targetFile">The file to write</param>
-    /// <returns>A value indicating whether the file has been replaced</returns>
-    public async Task<bool> ReplaceZipFile(ZipFile source, ZipFile target, IGameRomFile sourceFile, IGameRomFile targetFile) {
-        if (target.Mode == ZipFileMode.Read) {
-            throw new ArgumentException("Zip archive is opened in read mode");
-        }
-
-        // get the source entry
-        var entryPath = string.IsNullOrEmpty(sourceFile.Path) ? sourceFile.Name : $"{sourceFile.Path}/{sourceFile.Name}";
-        var sourceEntry = source.Entries.FirstOrDefault(e => e.FullName == entryPath);
-        if (sourceEntry == null) {
-            // maybe I should throw, but I have very bad exception management
-            return false;
-        }
-
-        if (target.Mode == ZipFileMode.Update) {
-            target.GetEntry(sourceFile.Name)?.Delete();
-        }
-
-        var targetEntry = target.CreateEntry(targetFile.Name);
-
-        // write content
-        using var targetStream = targetEntry.Open();
-        using var sourceStream = sourceEntry.Open();
-        
-        await sourceStream.CopyToAsync(targetStream);
-
-        return true;
-    }
-
-    /// <summary>
-    /// Deletes a file in a zip
-    /// </summary>
-    /// <param name="zip">The zip file</param>
-    /// <param name="file">A file to delete</param>
-    public void DeleteZipFile(ZipFile zip, IGameRomFile file) {
-        if (zip.Mode != ZipFileMode.Update) { return; }
-        
-        var entry = zip.GetEntry(string.IsNullOrEmpty(file.Path) ? file.Name : $"{file.Path}/{file.Name}");
-        entry?.Delete();
     }
 }

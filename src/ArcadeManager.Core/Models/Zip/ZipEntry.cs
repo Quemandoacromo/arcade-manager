@@ -1,29 +1,34 @@
+using ArcadeManager.Core.Services;
 using System.Diagnostics;
+using System.IO;
 using System.IO.Compression;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace ArcadeManager.Core.Models.Zip;
 
 [DebuggerDisplay("{FullName} ({Crc})")]
 public class ZipEntry(ZipArchiveEntry entry)
 {
-    public string Name => entry?.Name;
-
-    public string FullName => entry?.FullName;
-
     public string Crc => entry?.Crc32.ToString("X4").PadLeft(8, '0').ToLower();
-
+    public string FullName => entry?.FullName;
     public long Length => entry?.Length ?? 0;
+    public string Name => entry?.Name;
 
     public void Delete()
     {
         entry?.Delete();
     }
 
-    public Stream Open()
+    public async Task<byte[]> GetContentAsync()
     {
-        return entry?.Open();
+        using var stream = await entry.OpenAsync();
+        using var ms = new MemoryStream();
+
+        await stream.CopyToAsync(ms);
+        ms.Position = 0;
+        return ms.ToArray();
     }
 
     public string GetSha1()
@@ -40,5 +45,15 @@ public class ZipEntry(ZipArchiveEntry entry)
         }
 
         return formatted.ToString().ToLower();
+    }
+
+    public Stream Open()
+    {
+        return entry?.Open();
+    }
+
+    public Task<Stream> OpenAsync()
+    {
+        return entry?.OpenAsync();
     }
 }

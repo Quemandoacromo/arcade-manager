@@ -1,3 +1,6 @@
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Xml.Linq;
 using ArcadeManager.Core.Infrastructure.Interfaces;
 using ArcadeManager.Core.Models.Roms;
@@ -29,7 +32,7 @@ public class DatFile(IFileSystem fs) : IDatFile
             // for each game in the dat file
             foreach (var gameXml in doc.Root.Elements(gameTag)) {
                 // parse game infos
-                result.Add(GameRom.FromXml(gameXml, folder));
+                result.Add(GameRom.FromXml(gameXml));
             }
         });
 

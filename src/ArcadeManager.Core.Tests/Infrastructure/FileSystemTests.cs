@@ -47,8 +47,8 @@ public class FileSystemTests
 
         // assert
         result.Should().HaveCount(2);
-        result.ElementAt(0).Sha1.Should().NotBeNullOrEmpty();
-        result.ElementAt(1).Sha1.Should().NotBeNullOrEmpty();
+        result[0].Sha1.Should().NotBeNullOrEmpty();
+        result[1].Sha1.Should().NotBeNullOrEmpty();
     }
 
     [Fact]
@@ -111,7 +111,7 @@ public class FileSystemTests
         var fileInZip = targetZipFile.GetEntry("test1.txt");
         fileInZip.Should().NotBeNull();
         
-        var data = await new StreamReader(fileInZip!.Open()).ReadToEndAsync();
+        var data = await new StreamReader(await fileInZip!.OpenAsync()).ReadToEndAsync();
         data.Should().Be("test1 modified");
     }
 
@@ -156,7 +156,7 @@ public class FileSystemTests
         var fileInZip = targetZipFile.GetEntry("renamed.txt");
         fileInZip.Should().NotBeNull();
         
-        var data = await new StreamReader(fileInZip!.Open()).ReadToEndAsync();
+        var data = await new StreamReader(await fileInZip!.OpenAsync()).ReadToEndAsync();
         data.Should().Be("test1 modified");
     }
 

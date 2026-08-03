@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 
 namespace ArcadeManager.Core.Models.Roms;
 
@@ -6,6 +8,11 @@ namespace ArcadeManager.Core.Models.Roms;
 /// </summary>
 public class GameRomFilesList : List<GameRomFile>
 {
+    /// <summary>
+    /// Gets a value indicating whether any rom file has an error
+    /// </summary>
+    public bool HasError => this.Any(rf => rf.HasError);
+
     /// <summary>
     /// Gets the rom file details using the specified file name
     /// </summary>
@@ -20,9 +27,18 @@ public class GameRomFilesList : List<GameRomFile>
     }
 
     /// <summary>
-    /// Gets a value indicating whether any rom file has an error
+    /// Marks a rom file as fixed
     /// </summary>
-    public bool HasError => this.Any(rf => rf.HasError);
+    /// <param name="romFileName">The name of the rom file to mark as fixed</param>
+    public void Fixed(string romFileName)
+    {
+        var file = this[romFileName];
+        if (file != null)
+        {
+            file.ErrorDetails = null;
+            file.ErrorReason = ErrorReason.None;
+        }
+    }
 
     /// <summary>
     /// Removes a file from the list
@@ -32,18 +48,5 @@ public class GameRomFilesList : List<GameRomFile>
     public void RemoveFile(string fileName, string filePath = null)
     {
         RemoveAll(f => f.Name == fileName && (string.IsNullOrEmpty(f.Path) && string.IsNullOrEmpty(filePath) || f.Path == filePath));
-    }
-
-    /// <summary>
-    /// Marks a rom file as fixed
-    /// </summary>
-    /// <param name="romFileName">The name of the rom file to mark as fixed</param>
-    public void Fixed(string romFileName)
-    {
-        var file = this[romFileName];
-        if (file != null) {
-            file.ErrorDetails = null;
-            file.ErrorReason = ErrorReason.None;
-        }
     }
 }

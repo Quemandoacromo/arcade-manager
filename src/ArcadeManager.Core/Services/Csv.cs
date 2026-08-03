@@ -9,6 +9,7 @@ using CsvHelper;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -200,7 +201,7 @@ public class Csv(IFileSystem fs) : ICsv {
             await fs.WriteFileStream(target, async output => {
                 await output.WriteLineAsync($"{nameColumn}{defaultDelimiter}");
 
-                var files = fs.FilesGetList(main, "*.zip");
+                var files = fs.FilesGetList(main, "*.zip").ToList();
                 files.AddRange(fs.FilesGetList(main, "*.7z"));
                 var total = files.Count;
                 var i = 0;
