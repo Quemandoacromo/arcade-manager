@@ -167,10 +167,7 @@ public class BezelImageProcessor(IFileSystem fs) : IBezelImageProcessor
         // draw screen position
         var pen = Pens.Solid(Color.Red, 5);
         var rect = new Rectangle((int)position.X, (int)position.Y, (int)position.Width, (int)position.Height);
-        image.Mutate(ctx => ctx.Paint(canvas =>
-        {
-            canvas.Draw(pen, rect);
-        }));
+        image.Mutate(x => x.Draw(pen, rect));
 
         image.Save(imagePath);
     }
