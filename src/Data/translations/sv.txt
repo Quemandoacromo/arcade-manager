@@ -164,9 +164,9 @@ OVERLAYS_PACK_TITLE="Överläggspaket"
 OVERLAYS_SETTINGS_TITLE="Inställningar"
 OVERLAYS_SETTINGS_ROMSFOLDER="Rom-mapp"
 OVERLAYS_SETTINGS_ROMSFOLDERS="Rom-mappar"
-OVERLAYS_SETTINGS_ROMSFOLDER_PLACEHOLDER="Rom-mapp (t.ex: etropieomsarcade)"
+OVERLAYS_SETTINGS_ROMSFOLDER_PLACEHOLDER="Rom-mapp (t.ex: \\retropie\roms\arcade)"
 OVERLAYS_SETTINGS_CONFIGFOLDER="Konfigurationsmapp"
-OVERLAYS_SETTINGS_CONFIGFOLDER_PLACEHOLDER="Konfigurationsmapp (t.ex: etropieconfigs)"
+OVERLAYS_SETTINGS_CONFIGFOLDER_PLACEHOLDER="Konfigurationsmapp (t.ex: \\retropie\configs)"
 OVERLAYS_WIDTH="Bredd"
 OVERLAYS_HEIGHT="Höjd"
 OVERLAYS_RATIO_ERROR="Upplösningen är inte korrekt. Dessa paket fungerar endast med 16:9-skärmar."
