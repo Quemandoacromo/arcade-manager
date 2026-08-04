@@ -164,9 +164,9 @@ OVERLAYS_PACK_TITLE="Överläggspaket"
 OVERLAYS_SETTINGS_TITLE="Inställningar"
 OVERLAYS_SETTINGS_ROMSFOLDER="Rom-mapp"
 OVERLAYS_SETTINGS_ROMSFOLDERS="Rom-mappar"
-OVERLAYS_SETTINGS_ROMSFOLDER_PLACEHOLDER="Rom-mapp (t.ex: \retropieomsarcade)"
+OVERLAYS_SETTINGS_ROMSFOLDER_PLACEHOLDER="Rom-mapp (t.ex: etropieomsarcade)"
 OVERLAYS_SETTINGS_CONFIGFOLDER="Konfigurationsmapp"
-OVERLAYS_SETTINGS_CONFIGFOLDER_PLACEHOLDER="Konfigurationsmapp (t.ex: \retropieconfigs)"
+OVERLAYS_SETTINGS_CONFIGFOLDER_PLACEHOLDER="Konfigurationsmapp (t.ex: etropieconfigs)"
 OVERLAYS_WIDTH="Bredd"
 OVERLAYS_HEIGHT="Höjd"
 OVERLAYS_RATIO_ERROR="Upplösningen är inte korrekt. Dessa paket fungerar endast med 16:9-skärmar."
@@ -270,3 +270,11 @@ ROMS_CHECKDAT_OTHER_BIOS="Kontrollerar att de nödvändiga bios-filerna finns"
 ROMS_CHECKDAT_ADDFOLDER="Ytterligare mapp"
 ROMS_CHECKDAT_ADDFOLDER_DESC="(Valfritt) En annan mapp att söka filer i för att reparera rom-uppsättningen med (dessa filer kommer inte att ändras)"
 ROMS_CHECKDAT_HELPDECIDE_BODY="<h3>MAME - senaste versionen</h3><p>Du behöver DAT-filen som motsvarar din MAME-version: att kontrollera mot en DAT-fil från en annan version kan resultera i många fel.</p> <p>Om du använder en "_QQ_"allt i en"_QQ_" -distribution som Batocera eller Recalbox måste du ta reda på vilken version du använder, eftersom var och en innehåller en specifik version av MAME och FBNeo. </p><p><a href="_QQ_"https://wiki.batocera.org/arcade#romset_version_per_stable_batocera_release"_QQ_" class="_QQ_"blank"_QQ_">Batocera versionstabell</a><br><a href="_QQ_"https://wiki.recalbox.com/fr/emulators/arcade/mame/libretro-mame"_QQ_" class="_QQ_"blank"_QQ_">Recalbox senaste versionsinformation</a></p><p>Du kan sedan hämta ner den matchande zip-filen från <a href="_QQ_"https://www. progettosnaps.net/dats/MAME/"_QQ_" class="_QQ_"blank"_QQ_">ProgettoSnaps</a> och hämta DAT-filen som finns i <em>DATsROMs</em>.</p><p>Om du bara använder MAME på Windows kan du hämta XML-filen genom att köra <em class="_QQ_"code"_QQ_">.mame.exe -listxml > mame-roms.xml</em> på en kommandorad. </p><h3>MAME 2003 Plus</h3><p>Mame 2003 Plus, som används på de flesta distributioner som riktar sig till enheter med låg effekt (Knulli, OnionOS, MuOS, men även Batocera och Recalbox på Raspberry Pi) finns inte på ProgettoSnaps, och vad värre är, olika distributioner använder olika rom-uppsättningar utan att ändra versionsnumret för MAME2003+. <br>Du måste extrahera XML från MAME: </p><ul><li>Starta ett spel i MAME</li><li>Öppna RetroArch-menyn; kolla manualen för att veta hur du gör det, men det är vanligtvis en kombination av snabbtangent + någon knapp</li><li>Navigera till Snabbmeny > Kärnalternativ > System > Aktivera MAME-menyn</li><li>Gå ur menyn och återuppta spelet (tillbaka flera gånger > snabbmeny > återuppta)</li><li>Gå längst ner i den svarta menyn som visas över spelet, och välj "_QQ_"Generera XML DAT"_QQ_"</li> </ul> <p> Om du inte har dessa menyposter är det möjligt att du helt enkelt använder FBNeo. </p> <p>XML:en skapas vanligtvis i mappen "_QQ_"save"_QQ_" (ex: <em>CurrentProfileMAME 2003-Plusmame2003-plus</em> på Miyoo Mini/OnionOS, eller <em>savesmame2003-plus</em> på Knulli) och kallas något i stil med <em>mame2003-plus. xml</em>.<br> Om du inte kan hitta den på den här platsen, lycka till.</p><h3>FBNeo</h3><p>Om du använder FBNeo, använd bara den medföljande filen, eftersom romsets vanligtvis inte ändras mycket mellan versioner, förutom genom att lägga till nya spel.</p>"
+OVERLAYS_INDEX_INSTALL=
+BREADCRUMB_OVERLAYS_CONVERT_RATOMAME=
+BREADCRUMB_OVERLAYS_CHECK=
+BREADCRUMB_OVERLAYS_CONVERT_MAMETORA=
+OVERLAYS_INDEX_GENERATE=
+OVERLAYS_INDEX_CONVERT_MAMETORA=
+HOME_HOMEPAGE=
+OVERLAYS_INDEX_PAGETITLE=
