@@ -1,0 +1,11 @@
+﻿@{
+    ViewData["title"] = Localizer["OVERLAYS_GENERATE_PAGETITLE"];
+}
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index" class="navmenu">@Localizer["HOME"]</a></li>
+        <li class="breadcrumb-item"><a asp-controller="Overlays" asp-action="Index" class="navmenu">@Localizer["BREADCRUMB_OVERLAYS_INDEX"]</a></li>
+        <li class="breadcrumb-item active" aria-current="page">@Localizer["BREADCRUMB_OVERLAYS_GENERATE"]</li>
+    </ol>
+</nav>

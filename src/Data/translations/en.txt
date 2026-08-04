@@ -18,6 +18,11 @@ BREADCRUMB_CSV_DELETE=Delete games
 BREADCRUMB_CSV_CONVERTINI=Convert INI
 BREADCRUMB_CSV_CONVERTDAT=Convert DAT
 BREADCRUMB_OVERLAYS=Install overlays
+BREADCRUMB_OVERLAYS_INDEX=Overlays / bezels
+BREADCRUMB_OVERLAYS_CHECK=Check configurations
+BREADCRUMB_OVERLAYS_GENERATE=Generate configurations
+BREADCRUMB_OVERLAYS_CONVERT_MAMETORA=Convert MAME to RetroArch
+BREADCRUMB_OVERLAYS_CONVERT_RATOMAME=Convert RetroArch to Mame
 BREADCRUMB_ROMS=Manage roms
 BREADCRUMB_ROMS_COPY=Copy
 BREADCRUMB_ROMS_DELETE=Delete
@@ -39,7 +44,7 @@ ERROR_SAMESOURCETARGET=The source and target are identical
 
 HOME_ACTION_LANGUAGE=Language
 HOME_ACTION_CSV=Manage games lists
-HOME_ACTION_OVERLAYS=Install overlays
+HOME_ACTION_OVERLAYS=Overlays / Bezels
 HOME_ACTION_ROMS=Manage roms
 HOME_ACTION_HELP=Help
 HOME_ACTION_SYSTEM=Change system
@@ -187,6 +192,14 @@ ROMS_KEEP_INTRO=Select a CSV file listing the roms you want to keep, and the fol
 ROMS_KEEP_FOLDER=Rom folder
 ROMS_KEEP_FOLDER_DESC=The folder containing the roms you want to keep
 ROMS_KEEP_KEEP=Remove roms not listed
+
+OVERLAYS_INDEX_PAGETITLE=Overlays / bezels
+OVERLAYS_INDEX_INTRO=Here you can manage your overlays/bezels for RetroArch and Mame.
+OVERLAYS_INDEX_INSTALL=Install overlays on your system
+OVERLAYS_INDEX_CHECK=Check that screens are well positioned inside overlays/bezels
+OVERLAYS_INDEX_GENERATE=Generate overlays/bezels configurations based on images
+OVERLAYS_INDEX_CONVERT_MAMETORA=Convert MAME bezels to RetroArch overlays
+OVERLAYS_INDEX_CONVERT_RATOMAME=Convert RetroArch overlays to MAME bezels
 
 OVERLAYS_PAGETITLE=Overlays
 OVERLAYS_TITLE=Download and install an overlays pack <a href="/Help/Shares" class="navmenu">How to access my Retropie/Recabox shares</a>

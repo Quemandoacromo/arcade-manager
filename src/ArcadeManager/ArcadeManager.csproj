@@ -26,7 +26,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Views\Help\" />
-    <Folder Include="Views\Overlays\" />
     <Folder Include="Views\Roms\" />
     <Folder Include="Views\Csv\" />
   </ItemGroup>

@@ -81,9 +81,11 @@
         </div>
     </div>
     <div class="col-4">
-        <a href="@SettingsManager.AppSettings.App.HomePage" class="list-group-item list-group-item-action text-primary border-primary blank">
-            @Localizer["HOME_HOMEPAGE"] - v@(await ArcadeManagerEnvironment.GetVersion())
-        </a>
+        <div class="list-group">
+            <a href="@SettingsManager.AppSettings.App.HomePage" class="list-group-item list-group-item-action text-primary border-primary blank">
+                @Localizer["HOME_HOMEPAGE"] - v@(await ArcadeManagerEnvironment.GetVersion())
+            </a>
+        </div>
     </div>
     <div class="col-4 system">
         <div class="list-group">
@@ -123,61 +125,48 @@
 </div>
 
 @section Scripts {
-    <script>
-        $(() => {
-            // check that an OS has been selected
-            getOs((os) => {
-                // go to OS selection if none is set
-                if (typeof os === 'undefined' || os === null || os === '') {
-                    window.location.href = '@Url.Action("Os", "Home")';
-                }
+<script>
+$(() => {
+    // check that an OS has been selected
+    getOs((os) => {
+        // go to OS selection if none is set
+        if (typeof os === 'undefined' || os === null || os === '') {
+            window.location.href = '@Url.Action("Os", "Home")';
+        }
+    });
 
-                if (os === 'none' || os === 'batocera') {
-                    // disable overlays entry if no OS has been selected
-                    $('.mainmenu .overlays')
-                        .prop('disabled', true)
-                        .addClass('disabled')
-                        .removeClass('navmenu')
-                        .attr('href', '#')
-                        .off('click')
-                        .find('.card')
-                        .removeClass('border-primary')
-                        .on('click', () => { window.location.href = '@Url.Action("KnownSystems", "Help")'; });
-                }
-            });
+    // checks if an update is available
+    checkUpdate((version) => {
+        if (!version || version.length === 0) { return; }
 
-            // checks if an update is available
-            checkUpdate((version) => {
-                if (!version || version.length === 0) { return; }
+        version = version[0];
 
-                version = version[0];
+        $('#versionName').text(version.name);
+        $('#ignoreVersion').val(version.tagName);
+		$('#versionDate').text(version.publishedAtLocal);
+		$('#versionLink').attr('href', version.url);
+		$('#versionCurrent').text(version.current);
+        $('#versionDetails').html(version.body);
+        if (version.assets) {
+            for (let i = 0; i < version.assets.length; i++) {
+                const asset = version.assets[i];
+				const li = $('<a href="' + asset.downloadURL + '" class="list-group-item list-group-item-action blank">' + asset.name
+					+ ' <span class="badge badge-pill badge-light">' + asset.humanSize + '</span></a>');
+                $('#versionAssets').append(li);
+            }
+        } else {
+            $('#versionAssets').remove();
+		}
 
-                $('#versionName').text(version.name);
-                $('#ignoreVersion').val(version.tagName);
-				$('#versionDate').text(version.publishedAtLocal);
-				$('#versionLink').attr('href', version.url);
-				$('#versionCurrent').text(version.current);
-                $('#versionDetails').html(version.body);
-                if (version.assets) {
-                    for (let i = 0; i < version.assets.length; i++) {
-                        const asset = version.assets[i];
-						const li = $('<a href="' + asset.downloadURL + '" class="list-group-item list-group-item-action blank">' + asset.name
-							+ ' <span class="badge badge-pill badge-light">' + asset.humanSize + '</span></a>');
-                        $('#versionAssets').append(li);
-                    }
-                } else {
-                    $('#versionAssets').remove();
-				}
+        $('#updateModal').modal('show');
+    });
 
-                $('#updateModal').modal('show');
-            });
-
-            // ignore latest version
-            $('#ignoreVersionButton').on('click', () => {
-                if ($('#ignoreVersion').prop('checked')) {
-                    ipc('update-ignore', $('#ignoreVersion').val());
-				}
-            });
-        });
-    </script>
+    // ignore latest version
+    $('#ignoreVersionButton').on('click', () => {
+        if ($('#ignoreVersion').prop('checked')) {
+            ipc('update-ignore', $('#ignoreVersion').val());
+		}
+    });
+});
+</script>
 }
