@@ -174,9 +174,9 @@ OVERLAYS_PACK_TITLE="Pack d'overlays"
 OVERLAYS_SETTINGS_TITLE="Paramètres"
 OVERLAYS_SETTINGS_ROMSFOLDER="Dossier des roms"
 OVERLAYS_SETTINGS_ROMSFOLDERS="Dossiers de roms"
-OVERLAYS_SETTINGS_ROMSFOLDER_PLACEHOLDER="Dossier des roms (ex : etropieomsarcade)"
+OVERLAYS_SETTINGS_ROMSFOLDER_PLACEHOLDER="Dossier des roms (ex : \\retropie\roms\arcade)"
 OVERLAYS_SETTINGS_CONFIGFOLDER="Dossier de config"
-OVERLAYS_SETTINGS_CONFIGFOLDER_PLACEHOLDER="Dossier de config (ex : etropieconfigs)"
+OVERLAYS_SETTINGS_CONFIGFOLDER_PLACEHOLDER="Dossier de config (ex : \\retropie\configs)"
 OVERLAYS_WIDTH="Largeur"
 OVERLAYS_HEIGHT="Hauteur"
 OVERLAYS_RATIO_ERROR="La résolution n'est pas correcte. Ces packs ne fonctionnent qu'avec un format 16/9e."
